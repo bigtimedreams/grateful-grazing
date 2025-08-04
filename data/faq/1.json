@@ -1,0 +1,26 @@
+[
+    {
+        "question": "What is your service area?",
+        "answer": "We primarily serve Pittsburgh and the surrounding counties. Reach out if you have a special request!"
+    },
+    {
+        "question": "How do I book a grazing cart for my event?",
+        "answer": "Booking is easy! Just fill out our contact form with your event details, and we’ll get back to you within 24 hours to confirm availability and discuss options."
+    },
+    {
+        "question": "Do you offer vegetarian or vegan options?",
+        "answer": "Absolutely! We can customize our boards to accommodate vegetarian, vegan, and gluten-free diets. Just let us know your preferences when you book."
+    },
+    {
+        "question": "What is your cancellation policy?",
+        "answer": "We understand that plans can change. Cancellations made at least 7 days before the event will receive a full refund. Cancellations within 7 days may incur a small fee."
+    },
+    {
+        "question": "Can I customize my grazing board?",
+        "answer": "Yes! We love creating custom boards tailored to your tastes and dietary needs. Just let us know what you have in mind when you book."
+    },
+    {
+        "question": "How do I pay for my order?",
+        "answer": "We accept all major credit cards, PayPal, and Venmo. Payment is due at the time of booking to secure your order."
+    }
+]

@@ -1,0 +1,77 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  # For editing specific pages like the Homepage
+  - name: "pages"
+    label: "Pages"
+    files:
+      - label: "Homepage"
+        name: "homepage"
+        file: "data/homepage.json"
+        fields:
+          - { label: "Hero Headline", name: "hero_headline", widget: "string" }
+          - { label: "Hero Subheadline", name: "hero_subheadline", widget: "text" }
+          - { label: "About Headline", name: "about_headline", widget: "string" }
+          - { label: "About Text", name: "about_text", widget: "markdown" }
+          - { label: "About Image", name: "about_image", widget: "image" }
+
+  # For the Menu cards
+  - name: "menu"
+    label: "Menu"
+    folder: "data/menu"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Subtitle", name: "subtitle", widget: "string" }
+      - { label: "Price", name: "price", widget: "string" }
+      - { label: "Items", name: "items", widget: "list" }
+
+  # For the Event Gallery
+  - name: "gallery"
+    label: "Event Gallery"
+    folder: "data/gallery"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
+
+  # For Testimonials
+  - name: "testimonials"
+    label: "Testimonials"
+    folder: "data/testimonials"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Quote", name: "quote", widget: "text" }
+      - { label: "Avatar", name: "avatar", widget: "image", required: false }
+
+  # For the FAQ
+  - name: "faq"
+    label: "FAQ"
+    folder: "data/faq"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Answer", name: "answer", widget: "text" }
+
+  # For site-wide settings like contact info
+  - name: "settings"
+    label: "Site Settings"
+    files:
+      - label: "Contact & Footer"
+        name: "contact"
+        file: "data/settings.json"
+        fields:
+          - { label: "Phone Number", name: "phone", widget: "string" }
+          - { label: "Email Address", name: "email", widget: "string" }
+          - { label: "Facebook URL", name: "facebook_url", widget: "string" }
+          - { label: "Service Area", name: "service_area", widget: "string" }

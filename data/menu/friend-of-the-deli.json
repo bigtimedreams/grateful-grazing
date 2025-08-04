@@ -1,0 +1,10 @@
+{
+    "title": "Friend of the Deli",
+    "subtitle": "Pick 1 meat",
+    "price": "$10 base",
+    "items": [
+        "Prosciutto",
+        "Salami",
+        "Pepperoni"
+    ]
+}
