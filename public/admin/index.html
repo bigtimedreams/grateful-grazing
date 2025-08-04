@@ -6,19 +6,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
 
+    <!-- This script is for the Netlify Identity login widget. It must be in the <head>. -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
     <style>
+        /* This just makes the login page look less plain. */
         body {
             background-color: #f0f2f5;
         }
     </style>
-    <link rel="cms-config-url" href="/admin/config.yml" type="text/yaml">
 </head>
 
 <body>
+    <!-- This script loads the main CMS application (Decap CMS) -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
+    <!-- 
+    This script is the key to fixing the login redirect problem.
+    It tells the Netlify Identity widget that after a successful login,
+    it should send the user right back to this admin page.
+  -->
     <script>
         if (window.netlifyIdentity) {
             window.netlifyIdentity.on("init", user => {
