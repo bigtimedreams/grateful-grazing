@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Content Manager</title>
 
-    <!-- This script loads the Netlify Identity Widget. -->
-    <!-- It will create a login popup and handle all password resets correctly. -->
+    <!-- This line is the fix. It explicitly tells the CMS where to find the config file. -->
+    <link rel="cms-config-url" href="/admin/config.yml" type="text/yaml">
+
+    <!-- This script loads the Netlify Identity Widget for login popups. -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
 </head>
