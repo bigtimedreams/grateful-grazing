@@ -6,9 +6,9 @@ media_folder: "public/uploads"
 public_folder: "/uploads"
 
 collections:
-  # For editing specific pages like the Homepage
+  # This collection remains at the top level for easy access.
   - name: "pages"
-    label: "Pages"
+    label: "Core Pages"
     files:
       - label: "Homepage"
         name: "homepage"
@@ -20,48 +20,53 @@ collections:
           - { label: "About Text", name: "about_text", widget: "markdown" }
           - { label: "About Image", name: "about_image", widget: "image" }
 
-  # For the Menu cards
-  - name: "menu"
-    label: "Menu"
-    folder: "data/menu"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Subtitle", name: "subtitle", widget: "string" }
-      - { label: "Price", name: "price", widget: "string" }
-      - { label: "Items", name: "items", widget: "list" }
+  # --- NEW: A group for all your main page content sections ---
+  - name: "page_content"
+    label: "Page Content"
+    label_singular: "Content"
+    collections:
+      # For the Menu cards
+      - name: "menu"
+        label: "Menu Items"
+        folder: "data/menu"
+        create: true
+        slug: "{{slug}}"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Subtitle", name: "subtitle", widget: "string" }
+          - { label: "Price", name: "price", widget: "string", hint: "Include the dollar sign, like '$250'" } # Help text added
+          - { label: "Items", name: "items", widget: "list" }
 
-  # For the Event Gallery
-  - name: "gallery"
-    label: "Event Gallery"
-    folder: "data/gallery"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Image", name: "image", widget: "image" }
+      # For the Event Gallery
+      - name: "gallery"
+        label: "Event Gallery"
+        folder: "data/gallery"
+        create: true
+        slug: "{{slug}}"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Image", name: "image", widget: "image" }
 
-  # For Testimonials
-  - name: "testimonials"
-    label: "Testimonials"
-    folder: "data/testimonials"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Name", name: "name", widget: "string" }
-      - { label: "Quote", name: "quote", widget: "text" }
-      - { label: "Avatar", name: "avatar", widget: "image", required: false }
+      # For Testimonials
+      - name: "testimonials"
+        label: "Testimonials"
+        folder: "data/testimonials"
+        create: true
+        slug: "{{slug}}"
+        fields:
+          - { label: "Name", name: "name", widget: "string" }
+          - { label: "Quote", name: "quote", widget: "markdown" } # Changed from 'text' to 'markdown'
+          - { label: "Avatar", name: "avatar", widget: "image", required: false }
 
-  # For the FAQ
-  - name: "faq"
-    label: "FAQ"
-    folder: "data/faq"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Question", name: "question", widget: "string" }
-      - { label: "Answer", name: "answer", widget: "text" }
+      # For the FAQ
+      - name: "faq"
+        label: "FAQ"
+        folder: "data/faq"
+        create: true
+        slug: "{{slug}}"
+        fields:
+          - { label: "Question", name: "question", widget: "string" }
+          - { label: "Answer", name: "answer", widget: "markdown" } # Changed from 'text' to 'markdown'
 
   # For site-wide settings like contact info
   - name: "settings"
