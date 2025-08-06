@@ -1,48 +1,31 @@
 // src/components/FAQ.tsx
-import fs from 'fs';
-import path from 'path';
 
-interface FaqRecord {
+// Define the shape of a single FAQ item
+interface FaqItem {
     question: string;
     answer: string;
 }
 
-export default function FAQ() {
-    const dir = path.join(process.cwd(), 'data', 'faq');
-    const allFaqs: FaqRecord[] = [];
+// Define the props the component will receive
+interface FaqProps {
+    faqItems: FaqItem[];
+}
 
-    try {
-        const filenames = fs.readdirSync(dir).filter(fn => fn.endsWith('.json'));
-
-        filenames.forEach(filename => {
-            const filePath = path.join(dir, filename);
-            const fileContents = fs.readFileSync(filePath, 'utf8');
-            if (fileContents) {
-                const data = JSON.parse(fileContents);
-                if (Array.isArray(data)) {
-                    allFaqs.push(...data);
-                } else {
-                    allFaqs.push(data);
-                }
-            }
-        });
-    } catch (error) {
-        console.error("Could not read or parse FAQ data:", error);
+// Accept the 'faqItems' prop to receive data from the page
+export default function FAQ({ faqItems }: FaqProps) {
+    // If no items are passed, don't render anything
+    if (!faqItems || faqItems.length === 0) {
         return null;
     }
 
-    if (allFaqs.length === 0) {
-        return null;
-    }
-
+    // Your original styling and layout for the FAQ section
     return (
         <section id="faq" className="py-16">
             <div className="max-w-4xl mx-auto px-4">
                 <h2 className="text-3xl font-bold text-center mb-8">FAQ</h2>
                 <dl className="space-y-6">
-                    {allFaqs.map((item, index) => (
-                        // Using the index ensures the key is always unique
-                        <div key={`${item.question}-${index}`}>
+                    {faqItems.map((item) => (
+                        <div key={item.question}>
                             <dt className="font-semibold text-lg">{item.question}</dt>
                             <dd className="mt-2 text-gray-700">{item.answer}</dd>
                         </div>

@@ -1,19 +1,19 @@
 // src/app/page.tsx
-import Image from "next/image"
-import MenuCard from "@/components/MenuCard"
-import AboutBri from "@/components/AboutBri"
-import Gallery from "@/components/Gallery"
-import Testimonials from "@/components/Testimonials"
-import FAQ from "@/components/FAQ"
-import QuoteForm from "@/components/QuoteForm"
-import StickyCTA from "@/components/StickyCTA"
-import Footer from "@/components/Footer"
+import Image from "next/image";
+import MenuCard from "@/components/MenuCard";
+import AboutBri from "@/components/AboutBri";
+import Gallery from "@/components/Gallery";
+import Testimonials from "@/components/Testimonials";
+import FAQ from "@/components/FAQ";
+import QuoteForm from "@/components/QuoteForm";
+import StickyCTA from "@/components/StickyCTA";
+import Footer from "@/components/Footer";
 
 import fs from 'fs';
 import path from 'path';
-import ReactMarkdown from 'react-markdown';
+import matter from 'gray-matter';
 
-// --- Data Type Definitions ---
+// --- Data Type Definitions (Interfaces for all collections) ---
 interface HomepageData {
   hero_headline: string;
   hero_subheadline: string;
@@ -27,6 +27,19 @@ interface MenuCardData {
   price: string;
   items: string[];
 }
+interface GalleryImage {
+  title: string;
+  image: string;
+}
+interface TestimonialData {
+  name: string;
+  quote: string;
+  avatar?: string;
+}
+interface FaqItem {
+  question: string;
+  answer: string;
+}
 interface SettingsData {
   phone: string;
   email: string;
@@ -34,61 +47,45 @@ interface SettingsData {
   service_area: string;
 }
 
-// --- Data Fetching Function ---
+// --- Data Fetching Function (now includes all data) ---
 function getData() {
-  // Helper to read and parse a JSON file
-  const readJsonFile = (filePath: string) => {
-    const fileContents = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileContents);
+  const readJsonFile = (filePath: string) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+  const readMdDir = (dirPath: string) => {
+    const fullDir = path.join(process.cwd(), dirPath);
+    const fileNames = fs.readdirSync(fullDir);
+    return fileNames.map(fileName => {
+      if (path.extname(fileName) === '.md') {
+        const fullPath = path.join(fullDir, fileName);
+        const fileContents = fs.readFileSync(fullPath, 'utf8');
+        const { data } = matter(fileContents);
+        return data;
+      }
+    }).filter(Boolean);
   };
 
-  // Read homepage content
-  const homepagePath = path.join(process.cwd(), 'data', 'homepage.json');
-  const homepageData: HomepageData = readJsonFile(homepagePath);
+  const homepageData: HomepageData = readJsonFile(path.join(process.cwd(), 'data', 'homepage.json'));
+  const settingsData: SettingsData = readJsonFile(path.join(process.cwd(), 'data', 'settings.json'));
 
-  // Read all menu items
-  const menuDir = path.join(process.cwd(), 'data', 'menu');
-  const menuFilenames = fs.readdirSync(menuDir);
-  const menuData: MenuCardData[] = menuFilenames.map(filename => {
-    const filePath = path.join(menuDir, filename);
-    return readJsonFile(filePath);
-  });
+  // Read directory-based collections
+  const menuData: MenuCardData[] = fs.readdirSync(path.join(process.cwd(), 'data', 'menu')).map(filename => readJsonFile(path.join(process.cwd(), 'data', 'menu', filename)));
+  const galleryData = readMdDir('data/gallery') as GalleryImage[];
+  const testimonialsData = readMdDir('data/testimonials') as TestimonialData[];
+  const faqData = readMdDir('data/faq') as FaqItem[];
 
-  // Read site settings
-  const settingsPath = path.join(process.cwd(), 'data', 'settings.json');
-  const settingsData: SettingsData = readJsonFile(settingsPath);
-
-  return { homepageData, menuData, settingsData };
+  return { homepageData, menuData, galleryData, testimonialsData, faqData, settingsData };
 }
 
-
+// --- Main Page Component ---
 export default function Home() {
-  const { homepageData, menuData, settingsData } = getData();
+  const { homepageData, menuData, galleryData, testimonialsData, faqData, settingsData } = getData();
 
   return (
     <>
       <main className="font-sans text-brown-800 bg-stone-50">
         {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-b from-lime-100 to-amber-50 pb-24">
-          <div className="max-w-5xl mx-auto pt-20 text-center px-4">
-            <Image
-              src="/Brisheroheader.png"
-              alt="Grateful Grazing Logo"
-              width={400} height={400}
-              className="mx-auto mb-6 drop-shadow-lg"
-              priority
-            />
-            <h1 className="text-4xl sm:text-6xl font-bold leading-tight">
-              {homepageData.hero_headline}
-            </h1>
-            <p className="mt-4 text-lg sm:text-xl text-brown-700 max-w-3xl mx-auto">
-              {homepageData.hero_subheadline}
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#menu" className="px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg transition">See the Menu</a>
-              <a href="#quote" className="px-6 py-3 rounded-full bg-lime-600 hover:bg-lime-700 text-white font-semibold shadow-lg transition">Get a Quote</a>
-            </div>
-          </div>
+          {/* ... (rest of your Hero JSX) ... */}
         </section>
 
         {/* Menu Highlights */}
@@ -106,10 +103,10 @@ export default function Home() {
           image={homepageData.about_image}
         />
 
-        {/* CMS-driven Sections */}
-        <Gallery />
-        <Testimonials />
-        <FAQ />
+        {/* CMS-driven Sections (now passing data to all) */}
+        <Gallery galleryImages={galleryData} />
+        <Testimonials testimonials={testimonialsData} />
+        <FAQ faqItems={faqData} />
 
         {/* Quote Form */}
         <QuoteForm />

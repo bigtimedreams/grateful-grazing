@@ -1,52 +1,31 @@
 // src/components/Gallery.tsx
 import Image from 'next/image';
-import fs from 'fs';
-import path from 'path';
 
+// Define the shape of a single image record
 interface GalleryRecord {
     title: string;
     image: string;
 }
 
-export default function Gallery() {
-    const dir = path.join(process.cwd(), 'data', 'gallery');
-    const allImages: GalleryRecord[] = [];
+// Define the props the component will receive
+interface GalleryProps {
+    galleryImages: GalleryRecord[];
+}
 
-    try {
-        // Read all the .json files from the data/gallery directory
-        const filenames = fs.readdirSync(dir).filter(fn => fn.endsWith('.json'));
-
-        filenames.forEach(filename => {
-            const filePath = path.join(dir, filename);
-            const fileContents = fs.readFileSync(filePath, 'utf8');
-            if (fileContents) {
-                const data = JSON.parse(fileContents);
-                // This handles both single-item files and files with a list of items
-                if (Array.isArray(data)) {
-                    allImages.push(...data);
-                } else {
-                    allImages.push(data);
-                }
-            }
-        });
-    } catch (error) {
-        console.error("Could not read or parse Gallery data. Make sure the 'data/gallery' folder exists.", error);
-        // If the folder is missing or there's an error, we can return null so the page doesn't crash.
+// Accept the 'galleryImages' prop to receive data from the page
+export default function Gallery({ galleryImages }: GalleryProps) {
+    // If no images are passed, don't render anything
+    if (!galleryImages || galleryImages.length === 0) {
         return null;
     }
 
-    // If there are no images after reading the files, don't render the section.
-    if (allImages.length === 0) {
-        return null;
-    }
-
+    // Your original styling and layout for the gallery section
     return (
         <section id="gallery" className="max-w-6xl mx-auto px-4 py-16">
             <h2 className="text-3xl font-bold text-center mb-8">Event Gallery</h2>
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {allImages.map((item, index) => (
-                    // Using a combination of image path and index for a robust unique key
-                    <figure key={`${item.image}-${index}`} className="overflow-hidden rounded-xl shadow">
+                {galleryImages.map((item) => (
+                    <figure key={item.title} className="overflow-hidden rounded-xl shadow">
                         {item.image && (
                             <Image
                                 src={item.image}
