@@ -12,6 +12,8 @@ import Footer from "@/components/Footer";
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import ReactMarkdown from 'react-markdown';
+
 
 // --- Data Type Definitions (Interfaces for all collections) ---
 interface HomepageData {
@@ -67,7 +69,6 @@ function getData() {
   const homepageData: HomepageData = readJsonFile(path.join(process.cwd(), 'data', 'homepage.json'));
   const settingsData: SettingsData = readJsonFile(path.join(process.cwd(), 'data', 'settings.json'));
 
-  // Read directory-based collections
   const menuData: MenuCardData[] = fs.readdirSync(path.join(process.cwd(), 'data', 'menu')).map(filename => readJsonFile(path.join(process.cwd(), 'data', 'menu', filename)));
   const galleryData = readMdDir('data/gallery') as GalleryImage[];
   const testimonialsData = readMdDir('data/testimonials') as TestimonialData[];
@@ -85,7 +86,25 @@ export default function Home() {
       <main className="font-sans text-brown-800 bg-stone-50">
         {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-b from-lime-100 to-amber-50 pb-24">
-          {/* ... (rest of your Hero JSX) ... */}
+          <div className="max-w-5xl mx-auto pt-20 text-center px-4">
+            <Image
+              src="/Brisheroheader.png"
+              alt="Grateful Grazing Logo"
+              width={400} height={400}
+              className="mx-auto mb-6 drop-shadow-lg"
+              priority
+            />
+            <h1 className="text-4xl sm:text-6xl font-bold leading-tight">
+              {homepageData.hero_headline}
+            </h1>
+            <p className="mt-4 text-lg sm:text-xl text-brown-700 max-w-3xl mx-auto">
+              {homepageData.hero_subheadline}
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="#menu" className="px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg transition">See the Menu</a>
+              <a href="#quote" className="px-6 py-3 rounded-full bg-lime-600 hover:bg-lime-700 text-white font-semibold shadow-lg transition">Get a Quote</a>
+            </div>
+          </div>
         </section>
 
         {/* Menu Highlights */}
