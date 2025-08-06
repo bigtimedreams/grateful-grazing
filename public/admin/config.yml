@@ -6,7 +6,6 @@ media_folder: "public/uploads"
 public_folder: "/uploads"
 
 collections:
-  # This collection remains at the top level for easy access.
   - name: "pages"
     label: "Core Pages"
     files:
@@ -20,12 +19,13 @@ collections:
           - { label: "About Text", name: "about_text", widget: "markdown" }
           - { label: "About Image", name: "about_image", widget: "image" }
 
-  # --- NEW: A group for all your main page content sections ---
+  # --- This is the section with the fix ---
   - name: "page_content"
     label: "Page Content"
     label_singular: "Content"
+    folder: "data/content"  # <-- FIX: Added this required placeholder folder
+    create: false           # <-- FIX: Added this to prevent creating files here
     collections:
-      # For the Menu cards
       - name: "menu"
         label: "Menu Items"
         folder: "data/menu"
@@ -34,10 +34,9 @@ collections:
         fields:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Subtitle", name: "subtitle", widget: "string" }
-          - { label: "Price", name: "price", widget: "string", hint: "Include the dollar sign, like '$250'" } # Help text added
+          - { label: "Price", name: "price", widget: "string", hint: "Include the dollar sign, like '$250'" }
           - { label: "Items", name: "items", widget: "list" }
 
-      # For the Event Gallery
       - name: "gallery"
         label: "Event Gallery"
         folder: "data/gallery"
@@ -47,7 +46,6 @@ collections:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Image", name: "image", widget: "image" }
 
-      # For Testimonials
       - name: "testimonials"
         label: "Testimonials"
         folder: "data/testimonials"
@@ -55,10 +53,9 @@ collections:
         slug: "{{slug}}"
         fields:
           - { label: "Name", name: "name", widget: "string" }
-          - { label: "Quote", name: "quote", widget: "markdown" } # Changed from 'text' to 'markdown'
+          - { label: "Quote", name: "quote", widget: "markdown" }
           - { label: "Avatar", name: "avatar", widget: "image", required: false }
 
-      # For the FAQ
       - name: "faq"
         label: "FAQ"
         folder: "data/faq"
@@ -66,9 +63,8 @@ collections:
         slug: "{{slug}}"
         fields:
           - { label: "Question", name: "question", widget: "string" }
-          - { label: "Answer", name: "answer", widget: "markdown" } # Changed from 'text' to 'markdown'
+          - { label: "Answer", name: "answer", widget: "markdown" }
 
-  # For site-wide settings like contact info
   - name: "settings"
     label: "Site Settings"
     files:
