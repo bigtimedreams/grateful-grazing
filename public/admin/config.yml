@@ -7,7 +7,7 @@ public_folder: "/uploads"
 
 collections:
   - name: "pages"
-    label: "Core Pages"
+    label: "Pages"
     files:
       - label: "Homepage"
         name: "homepage"
@@ -19,48 +19,44 @@ collections:
           - { label: "About Text", name: "about_text", widget: "markdown" }
           - { label: "About Image", name: "about_image", widget: "image" }
 
-  # --- This is the corrected grouping section ---
-  - name: "page_content"
-    label: "Page Content"
-    collections:
-      - name: "menu"
-        label: "Menu Items"
-        folder: "data/menu"
-        create: true
-        slug: "{{slug}}"
-        fields:
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Subtitle", name: "subtitle", widget: "string" }
-          - { label: "Price", name: "price", widget: "string", hint: "Include the dollar sign, like '$250'" }
-          - { label: "Items", name: "items", widget: "list" }
+  - name: "menu"
+    label: "Menu"
+    folder: "data/menu"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Subtitle", name: "subtitle", widget: "string" }
+      - { label: "Price", name: "price", widget: "string" }
+      - { label: "Items", name: "items", widget: "list" }
 
-      - name: "gallery"
-        label: "Event Gallery"
-        folder: "data/gallery"
-        create: true
-        slug: "{{slug}}"
-        fields:
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Image", name: "image", widget: "image" }
+  - name: "gallery"
+    label: "Event Gallery"
+    folder: "data/gallery"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Image", name: "image", widget: "image" }
 
-      - name: "testimonials"
-        label: "Testimonials"
-        folder: "data/testimonials"
-        create: true
-        slug: "{{slug}}"
-        fields:
-          - { label: "Name", name: "name", widget: "string" }
-          - { label: "Quote", name: "quote", widget: "markdown" }
-          - { label: "Avatar", name: "avatar", widget: "image", required: false }
+  - name: "testimonials"
+    label: "Testimonials"
+    folder: "data/testimonials"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Quote", name: "quote", widget: "markdown" }
+      - { label: "Avatar", name: "avatar", widget: "image", required: false }
 
-      - name: "faq"
-        label: "FAQ"
-        folder: "data/faq"
-        create: true
-        slug: "{{slug}}"
-        fields:
-          - { label: "Question", name: "question", widget: "string" }
-          - { label: "Answer", name: "answer", widget: "markdown" }
+  - name: "faq"
+    label: "FAQ"
+    folder: "data/faq"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Answer", name: "answer", widget: "markdown" }
 
   - name: "settings"
     label: "Site Settings"
