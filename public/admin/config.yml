@@ -19,12 +19,9 @@ collections:
           - { label: "About Text", name: "about_text", widget: "markdown" }
           - { label: "About Image", name: "about_image", widget: "image" }
 
-  # --- This is the section with the fix ---
+  # --- This is the corrected grouping section ---
   - name: "page_content"
     label: "Page Content"
-    label_singular: "Content"
-    folder: "data/content"  # <-- FIX: Added this required placeholder folder
-    create: false           # <-- FIX: Added this to prevent creating files here
     collections:
       - name: "menu"
         label: "Menu Items"
