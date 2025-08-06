@@ -1,4 +1,4 @@
 ---
 name: joe
-quote: best
+quote: best ever
 ---
