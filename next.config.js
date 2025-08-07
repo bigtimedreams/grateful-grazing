@@ -1,8 +1,6 @@
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
-  // This rewrite rule is the fix for the /admin 404 error.
-  // It tells Next.js to serve the admin panel's HTML file for the /admin route.
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // This rewrite rule serves the admin panel's HTML file for the /admin route.
   async rewrites() {
     return [
       {
@@ -12,8 +10,7 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // This updates your existing image configuration to the latest standard.
-  // The old `domains` config is deprecated.
+  // This is the latest standard for configuring remote images.
   images: {
     remotePatterns: [
       {
@@ -27,4 +24,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
