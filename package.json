@@ -15,7 +15,7 @@
     "cross-env": "^7.0.3",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.400.0",
-    "next": "14.2.4",
+    "next": "^14.2.31",
     "nodemailer": "^6.9.14",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
