@@ -1,6 +1,6 @@
 # netlify.toml
 
 [functions]
-  # This tells Netlify to exclude the 'public/uploads' directory 
+  # This tells Netlify to exclude the ENTIRE 'public' directory 
   # from the serverless function bundle.
-  included_files = ["!public/uploads/**"]
+  included_files = ["!public/**"]
