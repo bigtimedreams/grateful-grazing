@@ -3,20 +3,119 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Content Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Grateful Grazing — Editor</title>
+    <meta name="robots" content="noindex" />
 
-    <!-- This line is the fix. It explicitly tells the CMS where to find the config file. -->
-    <link rel="cms-config-url" href="/admin/config.yml" type="text/yaml">
+    <!-- Required so CMS finds config.yml -->
+    <link rel="cms-config-url" href="/admin/config.yml" type="text/yaml" />
 
-    <!-- This script loads the Netlify Identity Widget for login popups. -->
+    <!-- Netlify Identity for login -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
+    <!-- Decap CMS -->
+    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+    <!-- Preview stylesheet (for the right-hand preview pane) -->
+    <link rel="stylesheet" href="/admin/preview.css" />
+    <style>
+        /* Light theming of the CMS shell for a friendlier look */
+        :root {
+            --ink: #111;
+            --muted: #667085;
+            --brand: #6c5ce7;
+            --bg: #fafafa;
+            --border: #e6e6e6;
+        }
+
+        html,
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--ink);
+            background: var(--bg);
+        }
+
+        /* Decap CMS renders inside shadow roots/iframes; we mainly pretty up preview via preview.css */
+    </style>
 </head>
 
 <body>
-    <!-- This script loads the main CMS application (Decap CMS) -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <script>
+        // ----- Friendly login redirect -----
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", (user) => {
+                if (!user) window.netlifyIdentity.on("login", () => window.location.reload());
+            });
+        }
+
+        // ----- Global preview styles (applied inside preview iframe) -----
+        CMS.registerPreviewStyle('/admin/preview.css');
+
+        // ----- Menu Card Preview (clean, photo-forward) -----
+        const MenuPreview = createClass({
+            render() {
+                const e = this.props.entry;
+                const get = (k, d = '') => e.getIn(['data', k]) ?? d;
+                const title = String(get('title'));
+                const desc = String(get('description'));
+                const base = Number(get('basePrice') || 0);
+                const serves = Number(get('serves') || 1);
+                const img = this.props.getAsset(get('image'));
+                const addons = e.getIn(['data', 'addons']) || [];
+
+                return h('article', { className: 'card' },
+                    img ? h('img', { className: 'hero', src: img.toString(), alt: title }) : null,
+                    h('div', { className: 'pad' },
+                        h('h2', { className: 'title' }, title || 'Untitled Menu'),
+                        h('p', { className: 'meta' }, `Serves ${serves} · $${base.toFixed(2)}`),
+                        desc ? h('p', { className: 'desc' }, desc) : null,
+                        addons && addons.size ? h('div', { className: 'addons' },
+                            h('h3', null, 'Add‑ons'),
+                            h('ul', null, addons.map((a, i) =>
+                                h('li', { key: i }, `${a.get('name')} — $${Number(a.get('price') || 0).toFixed(2)}`)
+                            ).toArray())
+                        ) : null
+                    )
+                );
+            }
+        });
+        CMS.registerPreviewTemplate('menus', MenuPreview);
+
+        // ----- Gallery Preview -----
+        const GalleryPreview = createClass({
+            render() {
+                const e = this.props.entry;
+                const caption = String(e.getIn(['data', 'caption']) || '');
+                const img = this.props.getAsset(e.getIn(['data', 'image']));
+                return h('figure', { className: 'gallery-card' },
+                    img ? h('img', { src: img.toString(), alt: caption || 'Gallery image' }) : null,
+                    caption ? h('figcaption', null, caption) : null
+                );
+            }
+        });
+        CMS.registerPreviewTemplate('gallery', GalleryPreview);
+
+        // ----- Simple currency widget (formats as you type) -----
+        const CurrencyControl = createClass({
+            handleChange(e) {
+                const raw = e.target.value.replace(/[^\d.]/g, '');
+                this.props.onChange(raw);
+            },
+            render() {
+                const v = this.props.value || '';
+                const display = v === '' ? '' : `$${Number(v).toFixed(2)}`;
+                return h('input', {
+                    type: 'text',
+                    inputMode: 'decimal',
+                    placeholder: '$0.00',
+                    value: display,
+                    onChange: this.handleChange.bind(this),
+                    className: 'cms-input'
+                });
+            }
+        });
+        CMS.registerWidget('currency', CurrencyControl);
+    </script>
 </body>
 
 </html>
