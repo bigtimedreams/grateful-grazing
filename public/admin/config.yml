@@ -13,50 +13,90 @@ slug:
   sanitize_replacement: "-"
 
 collections:
-  - name: "site"
-    label: "Site Settings"
+  # 1) Homepage JSON
+  - name: "homepage"
+    label: "Homepage"
     editor: { preview: false }
     files:
-      - file: "content/site.json"
-        label: "Business Info"
-        name: "general"
+      - file: "data/homepage.json"
+        label: "Homepage Content"
+        name: "homepage"
+        format: "json"
         fields:
-          - { label: "Business Name", name: "businessName", widget: "string", hint: "Shown in header & SEO." }
+          - { label: "Hero Headline", name: "hero_headline", widget: "string" }
+          - { label: "Hero Subheadline", name: "hero_subheadline", widget: "text" }
+          - { label: "About Headline", name: "about_headline", widget: "string" }
+          - { label: "About Text", name: "about_text", widget: "text" }
+          - { label: "About Image", name: "about_image", widget: "image" }
+
+  # 2) Settings JSON (footer/contacts)
+  - name: "settings"
+    label: "Settings"
+    editor: { preview: false }
+    files:
+      - file: "data/settings.json"
+        label: "Business Settings"
+        name: "settings"
+        format: "json"
+        fields:
           - { label: "Phone", name: "phone", widget: "string" }
           - { label: "Email", name: "email", widget: "string" }
-          - { label: "Service Area", name: "serviceArea", widget: "string" }
-          - { label: "Instagram URL", name: "instagram", widget: "string", required: false }
-          - { label: "Facebook URL", name: "facebook", widget: "string", required: false }
+          - { label: "Facebook URL", name: "facebook_url", widget: "string", required: false }
+          - { label: "Service Area", name: "service_area", widget: "string" }
 
-  - name: "menus"
-    label: "Menus"
-    label_singular: "Menu"
-    folder: "content/menus"
+  # 3) Menus (folder of JSON files) — matches MenuCardData
+  - name: "menu"
+    label: "Menu Cards"
+    label_singular: "Menu Card"
+    folder: "data/menu"
     create: true
-    sortable_fields: ["title", "basePrice", "serves", "commit_date"]
-    view_groups:
-      - { label: "Serves", field: "serves" }
-    summary: "{{title}} — ${{basePrice}} · serves {{serves}}"
+    extension: "json"
+    format: "json"
+    slug: "{{slug}}"
+    summary: "{{title}} — {{price}}"
+    sortable_fields: ["title", "price", "commit_date"]
     fields:
-      - { label: "Title", name: "title", widget: "string", hint: "e.g., Small Grazing Board" }
-      - { label: "Description", name: "description", widget: "text", hint: "What makes this board special?" }
-      - { label: "Base Price ($)", name: "basePrice", widget: "currency", value_type: "float", min: 0, step: 0.01 }
-      - { label: "Serves", name: "serves", widget: "number", min: 1, step: 1 }
-      - { label: "Photo", name: "image", widget: "image", required: false, hint: "Landscape image works best." }
-      - label: "Add‑ons"
-        name: "addons"
-        widget: "list"
-        required: false
-        summary: "{{fields.name}} — ${{fields.price}}"
-        fields:
-          - { label: "Name", name: "name", widget: "string" }
-          - { label: "Price ($)", name: "price", widget: "currency", value_type: "float", min: 0, step: 0.01 }
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+      - { label: "Price (display)", name: "price", widget: "string", hint: "e.g. $95 · $/per person" }
+      - { label: "Items", name: "items", widget: "list", field: { label: "Item", name: "item", widget: "string" } }
 
+  # 4) Gallery (folder of Markdown with frontmatter) — title + image
   - name: "gallery"
     label: "Gallery"
-    folder: "content/gallery"
+    folder: "data/gallery"
     create: true
-    summary: "{{caption}}"
+    slug: "{{slug}}"
+    format: "frontmatter"
+    extension: "md"
+    summary: "{{title}}"
     fields:
-      - { label: "Caption", name: "caption", widget: "string", required: false }
+      - { label: "Title", name: "title", widget: "string", required: false }
       - { label: "Image", name: "image", widget: "image" }
+
+  # 5) Testimonials (Markdown frontmatter) — name, quote, avatar?
+  - name: "testimonials"
+    label: "Testimonials"
+    folder: "data/testimonials"
+    create: true
+    slug: "{{slug}}"
+    format: "frontmatter"
+    extension: "md"
+    summary: "{{name}} — “{{quote}}”"
+    fields:
+      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Quote", name: "quote", widget: "text" }
+      - { label: "Avatar", name: "avatar", widget: "image", required: false }
+
+  # 6) FAQ (Markdown frontmatter) — question, answer
+  - name: "faq"
+    label: "FAQ"
+    folder: "data/faq"
+    create: true
+    slug: "{{slug}}"
+    format: "frontmatter"
+    extension: "md"
+    summary: "Q: {{question}}"
+    fields:
+      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Answer", name: "answer", widget: "text" }
