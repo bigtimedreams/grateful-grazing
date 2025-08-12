@@ -1,17 +1,21 @@
-@import "tailwindcss";
+/* src/app/globals.css */
 
+/* Tailwind (v3) directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Design tokens (CSS variables) --- */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* If you set these via next/font, they’ll resolve automatically */
+  --font-geist-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Dark mode tokens */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -19,8 +23,29 @@
   }
 }
 
+/* --- Base element tweaks --- */
+html {
+  color-scheme: light dark;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  /* or var(--font-geist-sans) if you set it */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Example: make sure links inherit color by default */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Optional: utility via @layer if you want reusable classes */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }
