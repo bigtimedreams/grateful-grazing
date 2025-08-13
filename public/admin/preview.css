@@ -1,10 +1,8 @@
-/* public/admin/preview.css
-   Styles applied inside the CMS preview iframe so entries look like real cards. */
-
+/* Polished, legible previews */
 :root {
     --ink: #101828;
     --muted: #667085;
-    --bg: #ffffff;
+    --bg: #fff;
     --border: #eaeaea;
     --surface: #f7f7fb;
     --ring: #d9d6fe;
@@ -15,13 +13,8 @@ body {
     color: var(--ink);
     background: var(--surface);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    margin: 0;
-    padding: 0;
+    margin: 0
 }
-
-/* --- Card shell ---------------------------------------------------------- */
 
 .cms-card {
     max-width: 840px;
@@ -30,109 +23,67 @@ body {
     border: 1px solid var(--border);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
+    box-shadow: 0 8px 24px rgba(16, 24, 40, .06)
 }
 
 .cms-pad {
-    padding: 20px 22px;
+    padding: 20px 22px
 }
-
-/* --- Media --------------------------------------------------------------- */
 
 .hero {
     width: 100%;
-    height: auto;
     display: block;
-    aspect-ratio: 16 / 9;
-    /* Nice landscape preview */
+    aspect-ratio: 16/9;
     object-fit: cover;
-    background: #f2f2f2;
+    background: #f2f2f2
 }
-
-/* --- Typography ---------------------------------------------------------- */
 
 .cms-title {
     font-size: 28px;
     font-weight: 700;
     line-height: 1.2;
-    letter-spacing: -0.01em;
-    margin: 0 0 6px;
+    letter-spacing: -.01em;
+    margin: 0 0 6px
 }
 
 .cms-meta {
     color: var(--muted);
     font-size: 14px;
-    margin: 0 0 12px;
+    margin: 0 0 12px
 }
 
 .cms-text {
     font-size: 16px;
     line-height: 1.7;
-    margin: 0;
+    margin: 0
 }
-
-/* --- Lists / Add-ons ----------------------------------------------------- */
 
 ul {
     margin: 10px 0 0;
-    padding: 0 0 0 18px;
+    padding: 0 0 0 18px
 }
 
 li {
-    margin: 4px 0;
+    margin: 4px 0
 }
-
-/* --- Blockquotes (Testimonials) ----------------------------------------- */
 
 blockquote {
     margin: 10px 0 0;
     padding-left: 14px;
     border-left: 3px solid var(--ring);
-    color: var(--ink);
-    font-style: italic;
+    font-style: italic
 }
 
-/* --- Figures (Gallery) --------------------------------------------------- */
-
-figure.cms-card {
-    margin: 28px auto;
-}
-
-figcaption {
-    padding: 12px 16px;
-    color: var(--muted);
-    font-size: 14px;
-}
-
-/* --- Inputs for custom widgets (if used later) --------------------------- */
-
-.cms-input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font: inherit;
-    outline: none;
-    background: var(--bg);
-}
-
-.cms-input:focus {
-    box-shadow: 0 0 0 4px var(--ring);
-    border-color: #7c6df3;
-}
-
-/* --- Small screens ------------------------------------------------------- */
-
-@media (max-width: 520px) {
+@media (max-width:520px) {
     .cms-title {
-        font-size: 22px;
+        font-size: 22px
     }
 
     .cms-pad {
-        padding: 16px;
+        padding: 16px
     }
 
     .hero {
-        aspect-ratio: 4 / 3;
+        aspect-ratio: 4/3
     }
 }

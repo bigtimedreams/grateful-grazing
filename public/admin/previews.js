@@ -3,101 +3,83 @@
     if (!window.CMS) return;
 
     CMS.registerPreviewStyle("/admin/preview.css");
-
     const { h, createClass } = window;
 
-    const get = (e, k, d = "") => {
-        const v = e.getIn(["data", k]);
-        return v == null ? d : v;
-    };
-    const S = (v) => (v == null ? "" : String(v));
+    const toStr = (v) => (v == null ? "" : String(v));
+    const get = (e, k, d = "") => e.getIn(["data", k]) ?? d;
 
-    // ---- Menu preview (title, subtitle, price, items:string[], image?) ----
+    // ---- Menu Preview (for collection "menu") ----
     const MenuPreview = createClass({
         render() {
             const e = this.props.entry;
-            const title = S(get(e, "title"));
-            const subtitle = S(get(e, "subtitle"));
-            const price = S(get(e, "price"));
-
-            let items = get(e, "items", []);
-            // Support both ["a","b"] and [{item:"a"}]
-            if (items && items.size && items.get) {
-                items =
-                    items.size && items.get(0) && items.get(0).get
-                        ? items.map((i) => S(i.get("item") || "")).toArray()
-                        : items.toArray().map(S);
-            }
-
+            const title = toStr(get(e, "title"));
+            const subtitle = toStr(get(e, "subtitle"));
+            const price = toStr(get(e, "price"));
             const imgField = get(e, "image") || get(e, "about_image");
             const img = imgField ? this.props.getAsset(imgField) : null;
 
-            return h(
-                "article",
-                { className: "cms-card" },
-                img
-                    ? h("img", { className: "hero", src: img.toString(), alt: title || "Menu" })
-                    : null,
-                h(
-                    "div",
-                    { className: "cms-pad" },
+            // items can be ["a","b"] or [{item:"a"}] from older entries
+            let items = get(e, "items", []);
+            if (items && items.size && items.get) {
+                items = items.get(0) && items.get(0).get
+                    ? items.map((i) => toStr(i.get("item") || "")).toArray()
+                    : items.toArray().map(toStr);
+            }
+
+            return h("article", { className: "cms-card" },
+                img ? h("img", { className: "hero", src: img.toString(), alt: title || "Menu" }) : null,
+                h("div", { className: "cms-pad" },
                     h("div", { className: "cms-title" }, title || "Untitled Menu"),
                     subtitle ? h("div", { className: "cms-meta" }, subtitle) : null,
                     price ? h("div", { className: "cms-meta" }, price) : null,
-                    items && items.length
-                        ? h("ul", null, items.map((t, i) => h("li", { key: i }, S(t))))
-                        : null
+                    items && items.length ? h("ul", null, items.map((t, i) => h("li", { key: i }, t))) : null
                 )
             );
-        },
+        }
     });
     CMS.registerPreviewTemplate("menu", MenuPreview);
 
-    // ---- Gallery preview ----
+    // ---- Gallery Preview ----
     const GalleryPreview = createClass({
         render() {
             const e = this.props.entry;
-            const title = S(get(e, "title"));
+            const title = toStr(get(e, "title"));
             const imgField = get(e, "image");
             const img = imgField ? this.props.getAsset(imgField) : null;
 
-            return h(
-                "figure",
-                { className: "cms-card" },
-                img
-                    ? h("img", { className: "hero", src: img.toString(), alt: title || "Gallery" })
-                    : null,
+            return h("figure", { className: "cms-card" },
+                img ? h("img", { className: "hero", src: img.toString(), alt: title || "Gallery" }) : null,
                 title ? h("figcaption", { className: "cms-pad" }, title) : null
             );
-        },
+        }
     });
     CMS.registerPreviewTemplate("gallery", GalleryPreview);
 
-    // ---- Testimonials preview ----
+    // ---- Testimonials Preview ----
     const TestimonialPreview = createClass({
         render() {
             const e = this.props.entry;
-            return h(
-                "div",
-                { className: "cms-card cms-pad" },
-                h("div", { className: "cms-title" }, S(get(e, "name")) || "Customer"),
-                h("blockquote", { className: "cms-text" }, `“${S(get(e, "quote"))}”`)
+            const name = toStr(get(e, "name"));
+            const quote = toStr(get(e, "quote"));
+            return h("div", { className: "cms-card cms-pad" },
+                h("div", { className: "cms-title" }, name || "Customer"),
+                h("blockquote", { className: "cms-text" }, `“${quote}”`)
             );
-        },
+        }
     });
     CMS.registerPreviewTemplate("testimonials", TestimonialPreview);
 
-    // ---- FAQ preview ----
+    // ---- FAQ Preview ----
     const FAQPreview = createClass({
         render() {
             const e = this.props.entry;
-            return h(
-                "div",
-                { className: "cms-card cms-pad" },
-                h("div", { className: "cms-title" }, S(get(e, "question")) || "Question"),
-                h("div", { className: "cms-text" }, S(get(e, "answer")))
+            const q = toStr(get(e, "question"));
+            const a = toStr(get(e, "answer"));
+            return h("div", { className: "cms-card cms-pad" },
+                h("div", { className: "cms-title" }, q || "Question"),
+                h("div", { className: "cms-text" }, a)
             );
-        },
+        }
     });
     CMS.registerPreviewTemplate("faq", FAQPreview);
 })();
