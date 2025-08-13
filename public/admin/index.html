@@ -3,137 +3,80 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Grateful Grazing — Content Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Content Manager</title>
     <meta name="robots" content="noindex" />
 
-    <!-- Tell the CMS where your config lives -->
+    <!-- Tell the CMS where the config lives -->
     <link rel="cms-config-url" href="/admin/config.yml" type="text/yaml" />
 
-    <!-- Netlify Identity for login -->
+    <!-- Netlify Identity (login) -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <!-- Prevent auto-init; we’ll initialize explicitly -->
+    <script>window.CMS_MANUAL_INIT = true;</script>
 
     <!-- Decap CMS app -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
-    <!-- Optional previews (won't break the UI if they error) -->
-    <link rel="stylesheet" href="/admin/preview.css" />
-    <script src="/admin/previews.js" defer></script>
-
     <style>
-        :root {
-            --ink: #111;
-            --muted: #6b7280;
-            --bg: #f7f7fb;
-            --card: #fff;
-            --border: #e5e7eb;
-        }
-
         html,
         body {
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-            margin: 0;
-            background: var(--bg);
-            color: var(--ink);
         }
 
-        #status {
-            max-width: 880px;
-            margin: 24px auto;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px 20px;
+        .err {
+            position: fixed;
+            left: 12px;
+            bottom: 12px;
+            right: 12px;
+            background: #fff3f3;
+            border: 1px solid #ffd4d4;
+            color: #8a1f1f;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .05);
         }
 
-        #status .heading {
-            font-weight: 700;
-            margin: 0 0 6px;
-        }
-
-        #status .muted {
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        #status code {
-            background: #f3f4f6;
-            padding: 2px 6px;
-            border-radius: 6px;
-        }
-
-        #status a {
-            color: #111;
+        .err code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
         }
     </style>
 </head>
 
 <body>
-    <!-- Friendly fallback so the page never looks blank -->
-    <div id="status">
-        <div class="heading">Loading editor…</div>
-        <div class="muted">
-            If this does not change to the editor in a few seconds, open
-            <a href="/admin/config.yml" target="_blank">/admin/config.yml</a>
-            to check the config is accessible. You can also press <strong>F12 → Console</strong> for details.
-        </div>
-    </div>
-
     <script>
-        // Reload the page after login so Git Gateway connects
+        // Show any runtime error on screen (helps when something blocks initialization)
+        window.addEventListener("error", (e) => {
+            const box = document.createElement("div");
+            box.className = "err";
+            box.innerHTML = "<strong>Admin error:</strong> <code>" + (e.message || e.error || "Unknown") + "</code>";
+            document.body.appendChild(box);
+        });
+
+        // Refresh after login so Git Gateway gets a token
         if (window.netlifyIdentity) {
             window.netlifyIdentity.on("init", (user) => {
                 if (!user) window.netlifyIdentity.on("login", () => location.reload());
             });
         }
 
-        // Health check: verify the config is reachable (prevents a mysterious blank page)
-        (async function checkConfig() {
+        // Manually initialize the CMS; retry once if the script races
+        function bootCMS(attempt) {
             try {
-                const res = await fetch("/admin/config.yml", { cache: "no-store" });
-                if (!res.ok) throw new Error("config.yml not reachable (" + res.status + ")");
+                if (!window.CMS) throw new Error("CMS not loaded yet");
+                CMS.init({ configPath: "/admin/config.yml" });
             } catch (err) {
-                document.getElementById("status").innerHTML =
-                    '<div class="heading">Config not found</div>' +
-                    '<div class="muted">Make sure <code>public/admin/config.yml</code> exists and the site publishes it at <code>/admin/config.yml</code>.</div>' +
-                    '<div class="muted">Error: ' + (err && err.message ? err.message : String(err)) + "</div>";
-                return;
+                if (!attempt) return setTimeout(() => bootCMS(1), 300);
+                console.error("CMS init error:", err);
+                const box = document.createElement("div");
+                box.className = "err";
+                box.innerHTML = "<strong>CMS init error:</strong> <code>" + (err.message || err) + "</code>";
+                document.body.appendChild(box);
             }
-        })();
-
-        // If the CMS fails to render, show the console error in the status panel
-        window.addEventListener("error", (e) => {
-            const box = document.getElementById("status");
-            if (box) {
-                box.innerHTML =
-                    '<div class="heading">Editor error</div>' +
-                    '<div class="muted">Open DevTools → Console for details. Common causes:</div>' +
-                    '<ul class="muted"><li>YAML syntax in <code>config.yml</code></li><li>Identity/Git Gateway disabled</li></ul>' +
-                    '<div class="muted"><strong>Message:</strong> ' + (e && e.message ? e.message : "Unknown") + "</div>";
-            }
-        });
-
-        window.addEventListener("unhandledrejection", (e) => {
-            const box = document.getElementById("status");
-            if (box) {
-                box.innerHTML =
-                    '<div class="heading">Editor error</div>' +
-                    '<div class="muted">Open DevTools → Console for details.</div>' +
-                    '<div class="muted"><strong>Message:</strong> ' + (e && e.reason ? e.reason : "Unknown") + "</div>";
-            }
-        });
-
-        // When the CMS UI mounts, remove the status box
-        const removeStatusWhenReady = () => {
-            const app = document.querySelector(".nc-app, [data-testid='cms']");
-            if (app) {
-                const box = document.getElementById("status");
-                if (box) box.remove();
-            } else {
-                requestAnimationFrame(removeStatusWhenReady);
-            }
-        };
-        removeStatusWhenReady();
+        }
+        bootCMS(0);
     </script>
 </body>
 
