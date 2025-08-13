@@ -2,8 +2,12 @@ backend:
   name: git-gateway
   branch: main
 
+# Lets you edit locally at http://localhost:3000/admin with `npx decap-server`
+local_backend: true
+
 publish_mode: editorial_workflow
 
+# Matches your actual upload folder
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
@@ -13,95 +17,91 @@ slug:
   sanitize_replacement: "-"
 
 collections:
-  # 1) Homepage JSON (used by your page.tsx)
-  - name: "homepage"
-    label: "Homepage"
+  # 1) Homepage (JSON your page.tsx reads)
+  - name: homepage
+    label: Homepage
     editor: { preview: false }
     files:
       - file: "data/homepage.json"
-        label: "Homepage Content"
-        name: "homepage"
-        format: "json"
+        label: Homepage Content
+        name: homepage
+        format: json
         fields:
-          - { label: "Hero Headline", name: "hero_headline", widget: "string" }
-          - { label: "Hero Subheadline", name: "hero_subheadline", widget: "text" }
-          - { label: "About Headline", name: "about_headline", widget: "string" }
-          - { label: "About Text", name: "about_text", widget: "text" }
-          - { label: "About Image", name: "about_image", widget: "image" }
+          - { label: "Hero Headline", name: hero_headline, widget: string }
+          - { label: "Hero Subheadline", name: hero_subheadline, widget: text }
+          - { label: "About Headline", name: about_headline, widget: string }
+          - { label: "About Text", name: about_text, widget: text }
+          - { label: "About Image", name: about_image, widget: image }
 
-  # 2) Footer/Contact JSON (used by your Footer)
-  - name: "settings"
-    label: "Settings"
+  # 2) Settings / Footer (JSON your Footer uses)
+  - name: settings
+    label: Settings
     editor: { preview: false }
     files:
       - file: "data/settings.json"
-        label: "Business Settings"
-        name: "settings"
-        format: "json"
+        label: Business Settings
+        name: settings
+        format: json
         fields:
-          - { label: "Phone", name: "phone", widget: "string" }
-          - { label: "Email", name: "email", widget: "string" }
-          - { label: "Facebook URL", name: "facebook_url", widget: "string", required: false }
-          - { label: "Service Area", name: "service_area", widget: "string" }
+          - { label: Phone, name: phone, widget: string }
+          - { label: Email, name: email, widget: string }
+          - { label: "Facebook URL", name: facebook_url, widget: string, required: false }
+          - { label: "Service Area", name: service_area, widget: string }
 
-  # 3) Menu Cards (folder of JSON) — PREVIEW ID: "menu"
-  - name: "menu"
+  # 3) Menu cards (JSON) — saves items as string[]
+  - name: menu
     label: "Menu Cards"
     label_singular: "Menu Card"
     folder: "data/menu"
     create: true
     extension: "json"
-    format: "json"
+    format: json
     slug: "{{slug}}"
-    summary: "{{title}} — {{price}}"
+    summary: "{{title}} - {{price}}"
     sortable_fields: ["title", "price", "commit_date"]
     fields:
-      - { label: "Title", name: "title", widget: "string", hint: "e.g., Small Grazing Board" }
-      - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
-      - { label: "Price (display text)", name: "price", widget: "string", hint: "Shown as-is, e.g. $95 or $15/person" }
-      - label: "Items"
-        name: "items"
-        widget: "list"
-        field: { label: "Item", name: "item", widget: "string" }
-      # Optional image if you decide to show one in cards/hero
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: Title, name: title, widget: string, hint: "e.g., Small Grazing Board" }
+      - { label: Subtitle, name: subtitle, widget: string, required: false }
+      - { label: "Price (display text)", name: price, widget: string, hint: "Shown as-is, e.g. $95 or $15/person" }
+      - { label: Items, name: items, widget: list }        # <-- string[] (no nested field)
+      - { label: Image, name: image, widget: image, required: false }
 
-  # 4) Gallery (Markdown + frontmatter) — PREVIEW ID: "gallery"
-  - name: "gallery"
-    label: "Gallery"
+  # 4) Gallery (Markdown frontmatter)
+  - name: gallery
+    label: Gallery
     folder: "data/gallery"
     create: true
-    format: "frontmatter"
-    extension: "md"
+    format: frontmatter
+    extension: md
     slug: "{{slug}}"
     summary: "{{title}}"
     fields:
-      - { label: "Title", name: "title", widget: "string", required: false }
-      - { label: "Image", name: "image", widget: "image" }
+      - { label: Title, name: title, widget: string, required: false }
+      - { label: Image, name: image, widget: image }
 
-  # 5) Testimonials (Markdown + frontmatter) — PREVIEW ID: "testimonials"
-  - name: "testimonials"
-    label: "Testimonials"
+  # 5) Testimonials (Markdown frontmatter)
+  - name: testimonials
+    label: Testimonials
     folder: "data/testimonials"
     create: true
-    format: "frontmatter"
-    extension: "md"
+    format: frontmatter
+    extension: md
     slug: "{{slug}}"
-    summary: "{{name}} — “{{quote}}”"
+    summary: "{{name}} - {{quote}}"
     fields:
-      - { label: "Name", name: "name", widget: "string" }
-      - { label: "Quote", name: "quote", widget: "text" }
-      - { label: "Avatar", name: "avatar", widget: "image", required: false }
+      - { label: Name, name: name, widget: string }
+      - { label: Quote, name: quote, widget: text }
+      - { label: Avatar, name: avatar, widget: image, required: false }
 
-  # 6) FAQ (Markdown + frontmatter) — PREVIEW ID: "faq"
-  - name: "faq"
-    label: "FAQ"
+  # 6) FAQ (Markdown frontmatter)
+  - name: faq
+    label: FAQ
     folder: "data/faq"
     create: true
-    format: "frontmatter"
-    extension: "md"
+    format: frontmatter
+    extension: md
     slug: "{{slug}}"
     summary: "Q: {{question}}"
     fields:
-      - { label: "Question", name: "question", widget: "string" }
-      - { label: "Answer", name: "answer", widget: "text" }
+      - { label: Question, name: question, widget: string }
+      - { label: Answer, name: answer, widget: text }
