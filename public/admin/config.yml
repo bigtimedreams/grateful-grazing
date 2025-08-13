@@ -2,12 +2,9 @@ backend:
   name: git-gateway
   branch: main
 
-# Lets you edit locally at http://localhost:3000/admin with `npx decap-server`
 local_backend: true
-
 publish_mode: editorial_workflow
 
-# Matches your actual upload folder
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
@@ -17,7 +14,7 @@ slug:
   sanitize_replacement: "-"
 
 collections:
-  # 1) Homepage (JSON your page.tsx reads)
+  # ---------------- Homepage (JSON) ----------------
   - name: homepage
     label: Homepage
     editor: { preview: false }
@@ -27,13 +24,13 @@ collections:
         name: homepage
         format: json
         fields:
-          - { label: "Hero Headline", name: hero_headline, widget: string }
-          - { label: "Hero Subheadline", name: hero_subheadline, widget: text }
-          - { label: "About Headline", name: about_headline, widget: string }
-          - { label: "About Text", name: about_text, widget: text }
-          - { label: "About Image", name: about_image, widget: image }
+          - { label: "Hero Headline", name: hero_headline, widget: string, hint: "Big title at the top of the page" }
+          - { label: "Hero Subheadline", name: hero_subheadline, widget: text, hint: "Short sentence under the title" }
+          - { label: "About Headline", name: about_headline, widget: string, hint: "Section title for About Bri" }
+          - { label: "About Text", name: about_text, widget: text, hint: "2–5 sentences about Bri and the cart" }
+          - { label: "About Image", name: about_image, widget: image, hint: "Photo used in the About section" }
 
-  # 2) Settings / Footer (JSON your Footer uses)
+  # ---------------- Settings / Footer (JSON) ----------------
   - name: settings
     label: Settings
     editor: { preview: false }
@@ -43,12 +40,12 @@ collections:
         name: settings
         format: json
         fields:
-          - { label: Phone, name: phone, widget: string }
-          - { label: Email, name: email, widget: string }
-          - { label: "Facebook URL", name: facebook_url, widget: string, required: false }
-          - { label: "Service Area", name: service_area, widget: string }
+          - { label: Phone, name: phone, widget: string, hint: "Customer phone number", pattern: ['^\\+?[0-9().\\-\\s]{7,}$', "Enter a valid phone number"] }
+          - { label: Email, name: email, widget: string, hint: "Customer contact email", pattern: ['^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$', "Enter a valid email"] }
+          - { label: "Facebook URL", name: facebook_url, widget: string, required: false, hint: "https://facebook.com/username" }
+          - { label: "Service Area", name: service_area, widget: string, hint: "e.g. 'Northwest Arkansas'" }
 
-  # 3) Menu cards (JSON) — saves items as string[]
+  # ---------------- Menu Cards (JSON) ----------------
   - name: menu
     label: "Menu Cards"
     label_singular: "Menu Card"
@@ -61,12 +58,12 @@ collections:
     sortable_fields: ["title", "price", "commit_date"]
     fields:
       - { label: Title, name: title, widget: string, hint: "e.g., Small Grazing Board" }
-      - { label: Subtitle, name: subtitle, widget: string, required: false }
-      - { label: "Price (display text)", name: price, widget: string, hint: "Shown as-is, e.g. $95 or $15/person" }
-      - { label: Items, name: items, widget: list }        # <-- string[] (no nested field)
-      - { label: Image, name: image, widget: image, required: false }
+      - { label: Subtitle, name: subtitle, widget: string, required: false, hint: "Optional subheading (size, occasion…)" }
+      - { label: "Price (display text)", name: price, widget: string, hint: "Shown as-is. Examples: '$95' or '$15/person'", pattern: ['^\\$?\\d+(?:\\.\\d{2})?(?:\\s*/?\\s*(?:person|pp|each))?$', "Use $ and numbers, e.g. $95 or $15/person"] }
+      - { label: Items, name: items, widget: list, hint: "One item per line (saved as a list)" }
+      - { label: Image, name: image, widget: image, required: false, hint: "Optional photo for this menu" }
 
-  # 4) Gallery (Markdown frontmatter)
+  # ---------------- Gallery (Markdown + frontmatter) ----------------
   - name: gallery
     label: Gallery
     folder: "data/gallery"
@@ -76,10 +73,10 @@ collections:
     slug: "{{slug}}"
     summary: "{{title}}"
     fields:
-      - { label: Title, name: title, widget: string, required: false }
-      - { label: Image, name: image, widget: image }
+      - { label: Title, name: title, widget: string, required: false, hint: "Short caption (optional)" }
+      - { label: Image, name: image, widget: image, hint: "Upload or pick an image" }
 
-  # 5) Testimonials (Markdown frontmatter)
+  # ---------------- Testimonials (Markdown + frontmatter) ----------------
   - name: testimonials
     label: Testimonials
     folder: "data/testimonials"
@@ -90,10 +87,10 @@ collections:
     summary: "{{name}} - {{quote}}"
     fields:
       - { label: Name, name: name, widget: string }
-      - { label: Quote, name: quote, widget: text }
-      - { label: Avatar, name: avatar, widget: image, required: false }
+      - { label: Quote, name: quote, widget: text, hint: "Short 1–3 sentence quote" }
+      - { label: Avatar, name: avatar, widget: image, required: false, hint: "Optional customer photo" }
 
-  # 6) FAQ (Markdown frontmatter)
+  # ---------------- FAQ (Markdown + frontmatter) ----------------
   - name: faq
     label: FAQ
     folder: "data/faq"
@@ -105,3 +102,16 @@ collections:
     fields:
       - { label: Question, name: question, widget: string }
       - { label: Answer, name: answer, widget: text }
+
+  # ---------------- Help (editable guide for Bri) ----------------
+  - name: help
+    label: Help
+    editor: { preview: false }
+    files:
+      - file: "data/help.md"
+        label: "Editor Guide"
+        name: guide
+        format: frontmatter
+        fields:
+          - { label: Title, name: title, widget: string, default: "Welcome to your editor" }
+          - { l

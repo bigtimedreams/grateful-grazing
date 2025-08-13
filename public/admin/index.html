@@ -7,10 +7,10 @@
     <title>Content Manager</title>
     <meta name="robots" content="noindex" />
 
-    <!-- Tell the CMS where the config lives -->
+    <!-- Point Decap to your config -->
     <link rel="cms-config-url" href="/admin/config.yml" type="text/yaml" />
 
-    <!-- Netlify Identity (login) -->
+    <!-- Netlify Identity (login widget) -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
     <!-- Prevent auto-init; we’ll initialize explicitly -->
@@ -19,50 +19,32 @@
     <!-- Decap CMS app -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
+    <!-- Friendly preview UI (safe: if these fail, CMS still loads) -->
+    <link rel="stylesheet" href="/admin/preview.css" />
+    <script src="/admin/previews.js" defer></script>
+
+    <!-- Floating “Publish checklist” -->
+    <script src="/admin/enhance.js" defer></script>
+
     <style>
         html,
         body {
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-        }
-
-        .err {
-            position: fixed;
-            left: 12px;
-            bottom: 12px;
-            right: 12px;
-            background: #fff3f3;
-            border: 1px solid #ffd4d4;
-            color: #8a1f1f;
-            padding: 10px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, .05);
-        }
-
-        .err code {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            background: #f7f7fb;
         }
     </style>
 </head>
 
 <body>
     <script>
-        // Show any runtime error on screen (helps when something blocks initialization)
-        window.addEventListener("error", (e) => {
-            const box = document.createElement("div");
-            box.className = "err";
-            box.innerHTML = "<strong>Admin error:</strong> <code>" + (e.message || e.error || "Unknown") + "</code>";
-            document.body.appendChild(box);
-        });
-
-        // Refresh after login so Git Gateway gets a token
+        // Refresh after login so Git Gateway has a token
         if (window.netlifyIdentity) {
             window.netlifyIdentity.on("init", (user) => {
                 if (!user) window.netlifyIdentity.on("login", () => location.reload());
             });
         }
 
-        // Manually initialize the CMS; retry once if the script races
+        // Manual, robust CMS init (handles script race conditions)
         function bootCMS(attempt) {
             try {
                 if (!window.CMS) throw new Error("CMS not loaded yet");
@@ -70,10 +52,6 @@
             } catch (err) {
                 if (!attempt) return setTimeout(() => bootCMS(1), 300);
                 console.error("CMS init error:", err);
-                const box = document.createElement("div");
-                box.className = "err";
-                box.innerHTML = "<strong>CMS init error:</strong> <code>" + (err.message || err) + "</code>";
-                document.body.appendChild(box);
             }
         }
         bootCMS(0);
