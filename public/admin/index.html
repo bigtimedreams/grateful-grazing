@@ -7,137 +7,133 @@
     <title>Grateful Grazing — Content Manager</title>
     <meta name="robots" content="noindex" />
 
-    <!-- Tell CMS where config.yml is -->
+    <!-- Tell the CMS where your config lives -->
     <link rel="cms-config-url" href="/admin/config.yml" type="text/yaml" />
 
     <!-- Netlify Identity for login -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
-    <!-- Decap CMS -->
+    <!-- Decap CMS app -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
-    <!-- Preview styles -->
+    <!-- Optional previews (won't break the UI if they error) -->
+    <link rel="stylesheet" href="/admin/preview.css" />
+    <script src="/admin/previews.js" defer></script>
+
     <style>
         :root {
             --ink: #111;
-            --muted: #666;
-            --bg: #f8f8fa;
-            --border: #e0e0e0;
+            --muted: #6b7280;
+            --bg: #f7f7fb;
+            --card: #fff;
+            --border: #e5e7eb;
         }
 
         html,
         body {
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            margin: 0;
             background: var(--bg);
             color: var(--ink);
         }
 
-        .cms-card {
-            max-width: 800px;
-            margin: 20px auto;
-            background: white;
+        #status {
+            max-width: 880px;
+            margin: 24px auto;
+            background: var(--card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-radius: 14px;
+            padding: 18px 20px;
         }
 
-        .cms-card img {
-            width: 100%;
-            display: block;
-            object-fit: cover;
-        }
-
-        .cms-pad {
-            padding: 16px 20px;
-        }
-
-        .cms-title {
-            font-size: 20px;
-            font-weight: 600;
+        #status .heading {
+            font-weight: 700;
             margin: 0 0 6px;
         }
 
-        .cms-meta {
-            font-size: 14px;
+        #status .muted {
             color: var(--muted);
-            margin-bottom: 10px;
+            font-size: 14px;
         }
 
-        .cms-text {
-            font-size: 15px;
-            line-height: 1.5;
+        #status code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        #status a {
+            color: #111;
         }
     </style>
 </head>
 
 <body>
+    <!-- Friendly fallback so the page never looks blank -->
+    <div id="status">
+        <div class="heading">Loading editor…</div>
+        <div class="muted">
+            If this does not change to the editor in a few seconds, open
+            <a href="/admin/config.yml" target="_blank">/admin/config.yml</a>
+            to check the config is accessible. You can also press <strong>F12 → Console</strong> for details.
+        </div>
+    </div>
+
     <script>
-        // Redirect to reload after login
+        // Reload the page after login so Git Gateway connects
         if (window.netlifyIdentity) {
             window.netlifyIdentity.on("init", (user) => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => document.location.reload());
-                }
+                if (!user) window.netlifyIdentity.on("login", () => location.reload());
             });
         }
 
-        // MENU PREVIEW
-        const MenuPreview = createClass({
-            render() {
-                const e = this.props.entry;
-                const get = (field) => e.getIn(["data", field]) || "";
-                const img = this.props.getAsset(get("about_image")) || this.props.getAsset(get("image"));
-                return h("article", { className: "cms-card" },
-                    img ? h("img", { src: img.toString(), alt: get("title") }) : null,
-                    h("div", { className: "cms-pad" },
-                        h("div", { className: "cms-title" }, get("title")),
-                        get("subtitle") ? h("div", { className: "cms-meta" }, get("subtitle")) : null,
-                        get("price") ? h("div", { className: "cms-meta" }, get("price")) : null,
-                        get("description") ? h("div", { className: "cms-text" }, get("description")) : null
-                    )
-                );
+        // Health check: verify the config is reachable (prevents a mysterious blank page)
+        (async function checkConfig() {
+            try {
+                const res = await fetch("/admin/config.yml", { cache: "no-store" });
+                if (!res.ok) throw new Error("config.yml not reachable (" + res.status + ")");
+            } catch (err) {
+                document.getElementById("status").innerHTML =
+                    '<div class="heading">Config not found</div>' +
+                    '<div class="muted">Make sure <code>public/admin/config.yml</code> exists and the site publishes it at <code>/admin/config.yml</code>.</div>' +
+                    '<div class="muted">Error: ' + (err && err.message ? err.message : String(err)) + "</div>";
+                return;
             }
-        });
-        CMS.registerPreviewTemplate("menu", MenuPreview);
+        })();
 
-        // GALLERY PREVIEW
-        const GalleryPreview = createClass({
-            render() {
-                const e = this.props.entry;
-                const img = this.props.getAsset(e.getIn(["data", "image"]));
-                const caption = e.getIn(["data", "title"]);
-                return h("figure", { className: "cms-card" },
-                    img ? h("img", { src: img.toString(), alt: caption || "Gallery image" }) : null,
-                    caption ? h("figcaption", { className: "cms-pad" }, caption) : null
-                );
+        // If the CMS fails to render, show the console error in the status panel
+        window.addEventListener("error", (e) => {
+            const box = document.getElementById("status");
+            if (box) {
+                box.innerHTML =
+                    '<div class="heading">Editor error</div>' +
+                    '<div class="muted">Open DevTools → Console for details. Common causes:</div>' +
+                    '<ul class="muted"><li>YAML syntax in <code>config.yml</code></li><li>Identity/Git Gateway disabled</li></ul>' +
+                    '<div class="muted"><strong>Message:</strong> ' + (e && e.message ? e.message : "Unknown") + "</div>";
             }
         });
-        CMS.registerPreviewTemplate("gallery", GalleryPreview);
 
-        // TESTIMONIAL PREVIEW
-        const TestimonialPreview = createClass({
-            render() {
-                const e = this.props.entry;
-                return h("div", { className: "cms-card cms-pad" },
-                    h("div", { className: "cms-title" }, e.getIn(["data", "name"])),
-                    h("blockquote", { className: "cms-text" }, `“${e.getIn(["data", "quote"]) || ""}”`)
-                );
+        window.addEventListener("unhandledrejection", (e) => {
+            const box = document.getElementById("status");
+            if (box) {
+                box.innerHTML =
+                    '<div class="heading">Editor error</div>' +
+                    '<div class="muted">Open DevTools → Console for details.</div>' +
+                    '<div class="muted"><strong>Message:</strong> ' + (e && e.reason ? e.reason : "Unknown") + "</div>";
             }
         });
-        CMS.registerPreviewTemplate("testimonials", TestimonialPreview);
 
-        // FAQ PREVIEW
-        const FAQPreview = createClass({
-            render() {
-                const e = this.props.entry;
-                return h("div", { className: "cms-card cms-pad" },
-                    h("div", { className: "cms-title" }, e.getIn(["data", "question"])),
-                    h("div", { className: "cms-text" }, e.getIn(["data", "answer"]))
-                );
+        // When the CMS UI mounts, remove the status box
+        const removeStatusWhenReady = () => {
+            const app = document.querySelector(".nc-app, [data-testid='cms']");
+            if (app) {
+                const box = document.getElementById("status");
+                if (box) box.remove();
+            } else {
+                requestAnimationFrame(removeStatusWhenReady);
             }
-        });
-        CMS.registerPreviewTemplate("faq", FAQPreview);
+        };
+        removeStatusWhenReady();
     </script>
 </body>
 
