@@ -1,22 +1,29 @@
-/* Applies inside the right-hand preview pane so entries look like live cards */
+/* public/admin/preview.css
+   Styles applied inside the CMS preview iframe so entries look like real cards. */
 
 :root {
     --ink: #101828;
     --muted: #667085;
-    --brand: #6c5ce7;
     --bg: #ffffff;
-    --ring: #d9d6fe;
     --border: #eaeaea;
+    --surface: #f7f7fb;
+    --ring: #d9d6fe;
 }
 
 html,
 body {
     color: var(--ink);
-    background: #f7f7fb;
+    background: var(--surface);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
 }
 
-.card {
+/* --- Card shell ---------------------------------------------------------- */
+
+.cms-card {
     max-width: 840px;
     margin: 28px auto;
     background: var(--bg);
@@ -26,71 +33,79 @@ body {
     box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
 }
 
-.card .hero {
+.cms-pad {
+    padding: 20px 22px;
+}
+
+/* --- Media --------------------------------------------------------------- */
+
+.hero {
     width: 100%;
     height: auto;
     display: block;
     aspect-ratio: 16 / 9;
+    /* Nice landscape preview */
     object-fit: cover;
+    background: #f2f2f2;
 }
 
-.card .pad {
-    padding: 20px 22px;
-}
+/* --- Typography ---------------------------------------------------------- */
 
-.title {
+.cms-title {
     font-size: 28px;
+    font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.01em;
     margin: 0 0 6px;
 }
 
-.meta {
+.cms-meta {
     color: var(--muted);
     font-size: 14px;
-    margin: 0 0 14px;
+    margin: 0 0 12px;
 }
 
-.desc {
+.cms-text {
     font-size: 16px;
     line-height: 1.7;
-    margin: 0 0 16px;
+    margin: 0;
 }
 
-.addons h3 {
-    font-size: 16px;
-    margin: 8px 0;
+/* --- Lists / Add-ons ----------------------------------------------------- */
+
+ul {
+    margin: 10px 0 0;
+    padding: 0 0 0 18px;
 }
 
-.addons ul {
-    padding-left: 18px;
-    margin: 0 0 8px;
+li {
+    margin: 4px 0;
 }
 
-.gallery-card {
-    max-width: 840px;
+/* --- Blockquotes (Testimonials) ----------------------------------------- */
+
+blockquote {
+    margin: 10px 0 0;
+    padding-left: 14px;
+    border-left: 3px solid var(--ring);
+    color: var(--ink);
+    font-style: italic;
+}
+
+/* --- Figures (Gallery) --------------------------------------------------- */
+
+figure.cms-card {
     margin: 28px auto;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
 }
 
-.gallery-card img {
-    width: 100%;
-    height: auto;
-    display: block;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-}
-
-.gallery-card figcaption {
+figcaption {
     padding: 12px 16px;
     color: var(--muted);
     font-size: 14px;
 }
 
-/* Input styling used by the custom currency widget */
+/* --- Inputs for custom widgets (if used later) --------------------------- */
+
 .cms-input {
     width: 100%;
     padding: 10px 12px;
@@ -98,9 +113,26 @@ body {
     border-radius: 10px;
     font: inherit;
     outline: none;
+    background: var(--bg);
 }
 
 .cms-input:focus {
     box-shadow: 0 0 0 4px var(--ring);
-    border-color: var(--brand);
+    border-color: #7c6df3;
+}
+
+/* --- Small screens ------------------------------------------------------- */
+
+@media (max-width: 520px) {
+    .cms-title {
+        font-size: 22px;
+    }
+
+    .cms-pad {
+        padding: 16px;
+    }
+
+    .hero {
+        aspect-ratio: 4 / 3;
+    }
 }
