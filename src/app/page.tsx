@@ -8,6 +8,7 @@ import FAQ from "@/components/FAQ";
 import QuoteForm from "@/components/QuoteForm";
 import StickyCTA from "@/components/StickyCTA";
 import Footer from "@/components/Footer";
+import ReviewForm from "@/components/ReviewForm";
 
 import fs from "fs";
 import path from "path";
@@ -35,11 +36,18 @@ interface SettingsData { phone: string; email: string; facebook_url: string; ser
 
 // --- helpers ---
 const ROOT = process.cwd();
-const readJson = <T,>(rel: string): T => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+const readJson = <T,>(rel: string, fallback: Partial<T> = {}): T => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8")) as T;
+  } catch {
+    return fallback as T;
+  }
+};
 const readFrontmatterDir = <T,>(relDir: string): T[] => {
   const dir = path.join(ROOT, relDir);
   if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir)
+  return fs
+    .readdirSync(dir)
     .filter((f) => f.endsWith(".md") || f.endsWith(".markdown"))
     .map((f) => {
       const raw = fs.readFileSync(path.join(dir, f), "utf8");
@@ -54,8 +62,10 @@ function getData() {
 
   const menuDir = path.join(ROOT, "data", "menu");
   const menuData: MenuCardData[] = fs.existsSync(menuDir)
-    ? fs.readdirSync(menuDir).filter(f => f.endsWith(".json"))
-      .map(f => readJson<MenuCardData>(path.join("data", "menu", f)))
+    ? fs
+      .readdirSync(menuDir)
+      .filter((f) => f.endsWith(".json"))
+      .map((f) => readJson<MenuCardData>(path.join("data", "menu", f)))
     : [];
 
   const galleryData = readFrontmatterDir<GalleryImage>("data/gallery");
@@ -100,15 +110,27 @@ export default function Home() {
               {homepageData.hero_subheadline}
             </p>
             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <a href="#menu" className="px-5 sm:px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg transition">See the Menu</a>
-              <a href="#quote" className="px-5 sm:px-6 py-3 rounded-full bg-lime-600 hover:bg-lime-700 text-white font-semibold shadow-lg transition">Get a Quote</a>
+              <a
+                href="#menu"
+                className="px-5 sm:px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg transition"
+              >
+                See the Menu
+              </a>
+              <a
+                href="#quote"
+                className="px-5 sm:px-6 py-3 rounded-full bg-lime-600 hover:bg-lime-700 text-white font-semibold shadow-lg transition"
+              >
+                Get a Quote
+              </a>
             </div>
           </div>
         </section>
 
         {/* Menu Highlights */}
         <section id="menu" className="max-w-screen-2xl mx-auto py-12 sm:py-16 px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12">Menu Highlights</h2>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12">
+            Menu Highlights
+          </h2>
           <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
             {menuData.map((card) => (
               <MenuCard
@@ -135,8 +157,13 @@ export default function Home() {
         <Testimonials testimonials={testimonialsData} />
         <FAQ faqItems={faqData} />
 
-        {/* Quote Form */}
-        <QuoteForm />
+        {/* Public review form (anchor target for #review) */}
+        <ReviewForm />
+
+        {/* Quote Form (anchor target for #quote with sticky-header offset) */}
+        <section id="quote" className="scroll-mt-24">
+          <QuoteForm />
+        </section>
 
         {/* Sticky CTA */}
         <StickyCTA />
