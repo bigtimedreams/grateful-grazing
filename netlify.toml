@@ -1,5 +1,4 @@
 # Netlify: build a static export of Next.js and publish /out.
-# No Next.js plugin, no large server handler.
 
 [build]
   command = "yarn build"
@@ -19,3 +18,9 @@
   for = "/_next/static/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Make both /thank-you and /thank-you/ work.
+[[redirects]]
+  from = "/thank-you"
+  to = "/thank-you/"
+  status = 200

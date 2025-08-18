@@ -3,14 +3,14 @@ export const metadata = { title: "Thanks for your review!" };
 
 export default function ThankYou() {
     return (
-        <main className="min-h-[50vh] grid place-items-center px-4">
+        <main className="min-h-[60vh] grid place-items-center px-4">
             <div className="max-w-lg text-center">
                 <h1 className="text-3xl sm:text-4xl font-bold mb-3">
                     Thanks for your review!
                 </h1>
                 <p className="text-neutral-700">
-                    We’ve received your message. After a quick moderation check, we’ll
-                    publish it on the site. 💛
+                    We’ve received your message. After a quick moderation check,
+                    we’ll publish it on the site. 💛
                 </p>
                 <a
                     href="/"
