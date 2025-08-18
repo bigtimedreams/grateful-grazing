@@ -1,5 +1,4 @@
 // src/components/ReviewForm.tsx
-// Static Netlify form — no JS required
 export default function ReviewForm() {
     return (
         <section id="review" className="bg-white scroll-mt-24">
@@ -13,16 +12,16 @@ export default function ReviewForm() {
                     method="POST"
                     data-netlify="true"
                     netlify-honeypot="bot-field"
-                    action="/thank-you/"             // <-- trailing slash so it maps to /thank-you/index.html
+                    action="/thank-you/"
+                    accept-charset="UTF-8"
                     encType="multipart/form-data"
                     className="grid gap-4 max-w-xl"
                 >
-                    {/* Netlify needs these hidden fields */}
+                    {/* Netlify needs these in the HTML it scans */}
                     <input type="hidden" name="form-name" value="testimonial-submissions" />
                     <p className="hidden">
                         <label>
-                            Don’t fill this out if you’re human:
-                            <input name="bot-field" />
+                            Don’t fill this out if you’re human: <input name="bot-field" />
                         </label>
                     </p>
 
