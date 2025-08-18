@@ -5,18 +5,17 @@
   publish = "out"
 
 [build.environment]
-  # Next 14 works best on Node 20
+  # Use Node 20 and DISABLE Netlify's Next runtime
   NODE_VERSION = "20"
-  # IMPORTANT: turn off Netlify's Next.js runtime (it creates a server handler that hijacks routes)
   NETLIFY_USE_NEXT_RUNTIME = "false"
 
-# Cache static assets produced by Next export.
+# Cache static assets from Next
 [[headers]]
   for = "/_next/static/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Serve the static thank-you page for both URL shapes.
+# Force static thank-you page for both URL shapes
 [[redirects]]
   from = "/thank-you"
   to = "/thank-you/index.html"
