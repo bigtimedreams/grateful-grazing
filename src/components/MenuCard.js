@@ -1,7 +1,7 @@
 // src/components/MenuCard.js
 "use client";
 
-export default function MenuCard({ title, subtitle, price, items }) {
+export default function MenuCard({ title, subtitle, price, items, image }) {
     const list = Array.isArray(items) ? items : [];
 
     const scrollToQuote = () => {
@@ -11,6 +11,16 @@ export default function MenuCard({ title, subtitle, price, items }) {
 
     return (
         <article className="group rounded-2xl border bg-white/90 shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+            {/* NEW: show image if provided */}
+            {image ? (
+                <img
+                    src={image}
+                    alt={title || "Menu image"}
+                    className="w-full aspect-[16/10] object-cover"
+                    loading="lazy"
+                />
+            ) : null}
+
             <div className="p-5">
                 <div className="flex items-start justify-between gap-4">
                     <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
