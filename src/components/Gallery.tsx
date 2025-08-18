@@ -1,7 +1,7 @@
 // src/components/Gallery.tsx
 type GalleryItem = {
-    title?: string | null; // title can be missing in your MD frontmatter
-    image: string;         // image is required
+    title?: string | null;
+    image: string; // required
 };
 
 export default function Gallery({ galleryImages = [] }: { galleryImages?: GalleryItem[] }) {
@@ -9,26 +9,28 @@ export default function Gallery({ galleryImages = [] }: { galleryImages?: Galler
 
     return (
         <section className="bg-white">
-            <div className="max-w-6xl mx-auto px-4 py-16">
-                <h2 className="text-3xl font-bold tracking-tight mb-6">Gallery</h2>
+            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-8 sm:mb-10">
+                    Gallery
+                </h2>
 
-                <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
+                {/* Responsive grid — 1 col mobile, 2 tablet, 3 desktop */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                     {galleryImages.map((g, i) => {
-                        const img = g.image;
                         const caption = g.title ?? "";
                         return (
                             <figure
                                 key={i}
-                                className="mb-4 break-inside-avoid rounded-2xl overflow-hidden border bg-white shadow-sm"
+                                className="rounded-2xl overflow-hidden border bg-white shadow-sm"
                             >
-                                {img && (
-                                    <img
-                                        src={img}
-                                        alt={caption || "Gallery image"}
-                                        className="w-full object-cover"
-                                        loading="lazy"
-                                    />
-                                )}
+                                <img
+                                    src={g.image}
+                                    alt={caption || "Grateful Grazing board"}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="w-full object-cover aspect-[4/3]" // nice consistent crop
+                                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                                />
                                 {caption ? (
                                     <figcaption className="p-3 text-sm text-neutral-700">{caption}</figcaption>
                                 ) : null}

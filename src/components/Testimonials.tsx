@@ -1,47 +1,41 @@
 // src/components/Testimonials.tsx
-import Image from 'next/image';
+type T = { name: string; quote: string; avatar?: string };
 
-// This defines the shape of a single testimonial
-interface Testimonial {
-    name: string;
-    quote: string;
-    avatar?: string;
-}
+export default function Testimonials({ testimonials = [] as T[] }) {
+    if (!testimonials.length) return null;
 
-// This tells the component to expect a prop called "testimonials"
-// which is an array of Testimonial objects
-interface TestimonialsProps {
-    testimonials: Testimonial[];
-}
-
-// By adding "{ testimonials }: TestimonialsProps", we are telling the component
-// to accept the data from page.tsx
-export default function Testimonials({ testimonials }: TestimonialsProps) {
-    // If no data was passed, don't show anything
-    if (!testimonials || testimonials.length === 0) {
-        return null;
-    }
-
-    // Your original styling and layout for the testimonials section
     return (
-        <section id="testimonials" className="bg-lime-50 py-16">
-            <div className="max-w-4xl mx-auto px-4">
-                <h2 className="text-3xl font-bold text-center mb-10">What People Say</h2>
-                <div className="grid gap-8 md:grid-cols-2">
-                    {testimonials.map((item) => (
-                        <div key={item.name} className="p-6 bg-white rounded-xl shadow flex flex-col">
-                            {item.avatar && (
-                                <Image
-                                    src={item.avatar}
-                                    alt={item.name}
-                                    width={64}
-                                    height={64}
-                                    className="rounded-full mb-4 self-start"
+        <section className="bg-gradient-to-br from-amber-50 to-lime-50">
+            <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-8 sm:mb-10">
+                    What our clients say
+                </h2>
+
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    {testimonials.map((t, i) => (
+                        <article
+                            key={i}
+                            className="rounded-2xl border bg-white p-5 shadow-sm"
+                            itemScope
+                            itemType="https://schema.org/Review"
+                        >
+                            <div className="flex items-center gap-3">
+                                <img
+                                    src={t.avatar || "/default-avatar.png"}
+                                    alt={t.name ? `${t.name}'s avatar` : "Client avatar"}
+                                    className="w-10 h-10 rounded-full object-cover border"
+                                    loading="lazy"
+                                    decoding="async"
                                 />
-                            )}
-                            <blockquote className="italic mb-4 flex-grow">“{item.quote}”</blockquote>
-                            <p className="text-right font-semibold">— {item.name}</p>
-                        </div>
+                                <div className="font-medium" itemProp="author" itemScope itemType="https://schema.org/Person">
+                                    <span itemProp="name">{t.name}</span>
+                                </div>
+                            </div>
+
+                            <blockquote className="mt-3 text-neutral-800" itemProp="reviewBody">
+                                “{t.quote}”
+                            </blockquote>
+                        </article>
                     ))}
                 </div>
             </div>
