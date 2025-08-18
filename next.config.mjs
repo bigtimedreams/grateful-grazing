@@ -1,11 +1,14 @@
 // next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Export pages to static HTML (fast, no giant server bundle)
-  output: "export",
+  // tell Next to emit a static site into /out on `next build`
+  output: 'export',
 
-  // Next/Image in static export mode
+  // required when exporting and using <Image>
   images: { unoptimized: true },
+
+  // makes URLs like /thank-you/ map to /out/thank-you/index.html
+  trailingSlash: true,
 };
 
 export default nextConfig;
