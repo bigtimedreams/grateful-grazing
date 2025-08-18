@@ -1,7 +1,41 @@
 // src/components/Testimonials.tsx
-type T = { name: string; quote: string; avatar?: string };
+"use client";
 
-export default function Testimonials({ testimonials = [] as T[] }) {
+import { useState } from "react";
+
+type Testimonial = { name: string; quote: string; avatar?: string };
+
+function InitialAvatar({ name }: { name: string }) {
+    const initials = (name || "")
+        .split(/\s+/)
+        .map((s) => s[0] || "")
+        .join("")
+        .slice(0, 2)
+        .toUpperCase();
+
+    return (
+        <div className="w-10 h-10 rounded-full bg-neutral-200 text-neutral-700 flex items-center justify-center border font-semibold">
+            {initials || "GG"}
+        </div>
+    );
+}
+
+function PersonAvatar({ name, src }: { name: string; src?: string }) {
+    const [broken, setBroken] = useState(false);
+    if (!src || broken) return <InitialAvatar name={name} />;
+    return (
+        <img
+            src={src}
+            alt={name ? `${name}'s avatar` : "Client avatar"}
+            className="w-10 h-10 rounded-full object-cover border"
+            loading="lazy"
+            decoding="async"
+            onError={() => setBroken(true)}
+        />
+    );
+}
+
+export default function Testimonials({ testimonials = [] as Testimonial[] }) {
     if (!testimonials.length) return null;
 
     return (
@@ -15,24 +49,28 @@ export default function Testimonials({ testimonials = [] as T[] }) {
                     {testimonials.map((t, i) => (
                         <article
                             key={i}
-                            className="rounded-2xl border bg-white p-5 shadow-sm"
+                            className="rounded-2xl border bg-white p-5 shadow-sm flex flex-col gap-3"
                             itemScope
                             itemType="https://schema.org/Review"
                         >
                             <div className="flex items-center gap-3">
-                                <img
-                                    src={t.avatar || "/default-avatar.png"}
-                                    alt={t.name ? `${t.name}'s avatar` : "Client avatar"}
-                                    className="w-10 h-10 rounded-full object-cover border"
-                                    loading="lazy"
-                                    decoding="async"
-                                />
-                                <div className="font-medium" itemProp="author" itemScope itemType="https://schema.org/Person">
-                                    <span itemProp="name">{t.name}</span>
+                                <PersonAvatar name={t.name} src={t.avatar} />
+                                <div
+                                    className="font-medium"
+                                    itemProp="author"
+                                    itemScope
+                                    itemType="https://schema.org/Person"
+                                >
+                                    <span itemProp="name" className="capitalize">
+                                        {t.name}
+                                    </span>
                                 </div>
                             </div>
 
-                            <blockquote className="mt-3 text-neutral-800" itemProp="reviewBody">
+                            <blockquote
+                                className="text-neutral-800 italic leading-relaxed"
+                                itemProp="reviewBody"
+                            >
                                 “{t.quote}”
                             </blockquote>
                         </article>
