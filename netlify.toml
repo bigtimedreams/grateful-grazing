@@ -22,5 +22,10 @@
 # Make both /thank-you and /thank-you/ work.
 [[redirects]]
   from = "/thank-you"
-  to = "/thank-you/"
+  to = "/thank-you/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/thank-you/"
+  to = "/thank-you/index.html"
   status = 200
