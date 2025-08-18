@@ -9,11 +9,9 @@ import QuoteForm from "@/components/QuoteForm";
 import StickyCTA from "@/components/StickyCTA";
 import Footer from "@/components/Footer";
 
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import ReactMarkdown from 'react-markdown';
-
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
 
 // --- Data Type Definitions (Interfaces for all collections) ---
 interface HomepageData {
@@ -28,9 +26,10 @@ interface MenuCardData {
   subtitle: string;
   price: string;
   items: string[];
+  image?: string; // ← NEW: optional image from CMS JSON
 }
 interface GalleryImage {
-  title: string;
+  title?: string;
   image: string;
 }
 interface TestimonialData {
@@ -49,30 +48,42 @@ interface SettingsData {
   service_area: string;
 }
 
-// --- Data Fetching Function (now includes all data) ---
+// --- Data Fetching Function (same behavior as yours) ---
 function getData() {
-  const readJsonFile = (filePath: string) => JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const readJsonFile = (filePath: string) =>
+    JSON.parse(fs.readFileSync(filePath, "utf8"));
 
   const readMdDir = (dirPath: string) => {
     const fullDir = path.join(process.cwd(), dirPath);
     const fileNames = fs.readdirSync(fullDir);
-    return fileNames.map(fileName => {
-      if (path.extname(fileName) === '.md') {
-        const fullPath = path.join(fullDir, fileName);
-        const fileContents = fs.readFileSync(fullPath, 'utf8');
-        const { data } = matter(fileContents);
-        return data;
-      }
-    }).filter(Boolean);
+    return fileNames
+      .map((fileName) => {
+        if (path.extname(fileName) === ".md") {
+          const fullPath = path.join(fullDir, fileName);
+          const fileContents = fs.readFileSync(fullPath, "utf8");
+          const { data } = matter(fileContents);
+          return data;
+        }
+      })
+      .filter(Boolean);
   };
 
-  const homepageData: HomepageData = readJsonFile(path.join(process.cwd(), 'data', 'homepage.json'));
-  const settingsData: SettingsData = readJsonFile(path.join(process.cwd(), 'data', 'settings.json'));
+  const homepageData: HomepageData = readJsonFile(
+    path.join(process.cwd(), "data", "homepage.json")
+  );
+  const settingsData: SettingsData = readJsonFile(
+    path.join(process.cwd(), "data", "settings.json")
+  );
 
-  const menuData: MenuCardData[] = fs.readdirSync(path.join(process.cwd(), 'data', 'menu')).map(filename => readJsonFile(path.join(process.cwd(), 'data', 'menu', filename)));
-  const galleryData = readMdDir('data/gallery') as GalleryImage[];
-  const testimonialsData = readMdDir('data/testimonials') as TestimonialData[];
-  const faqData = readMdDir('data/faq') as FaqItem[];
+  const menuData: MenuCardData[] = fs
+    .readdirSync(path.join(process.cwd(), "data", "menu"))
+    .map((filename) =>
+      readJsonFile(path.join(process.cwd(), "data", "menu", filename))
+    );
+
+  const galleryData = readMdDir("data/gallery") as GalleryImage[];
+  const testimonialsData = readMdDir("data/testimonials") as TestimonialData[];
+  const faqData = readMdDir("data/faq") as FaqItem[];
 
   return { homepageData, menuData, galleryData, testimonialsData, faqData, settingsData };
 }
@@ -90,7 +101,8 @@ export default function Home() {
             <Image
               src="/Brisheroheader.png"
               alt="Grateful Grazing Logo"
-              width={400} height={400}
+              width={400}
+              height={400}
               className="mx-auto mb-6 drop-shadow-lg"
               priority
             />
@@ -111,7 +123,16 @@ export default function Home() {
         <section id="menu" className="max-w-6xl mx-auto py-16 px-4">
           <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">Menu Highlights</h2>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {menuData.map(card => <MenuCard key={card.title} {...card} />)}
+            {menuData.map((card) => (
+              <MenuCard
+                key={card.title}
+                title={card.title}
+                subtitle={card.subtitle}
+                price={card.price}
+                items={card.items}
+                image={card.image /* stays undefined if not present; component handles it */}
+              />
+            ))}
           </div>
         </section>
 
@@ -122,7 +143,7 @@ export default function Home() {
           image={homepageData.about_image}
         />
 
-        {/* CMS-driven Sections (now passing data to all) */}
+        {/* CMS-driven Sections */}
         <Gallery galleryImages={galleryData} />
         <Testimonials testimonials={testimonialsData} />
         <FAQ faqItems={faqData} />
@@ -137,5 +158,5 @@ export default function Home() {
       {/* Footer */}
       <Footer {...settingsData} />
     </>
-  )
+  );
 }
