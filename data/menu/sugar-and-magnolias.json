@@ -1,11 +1,12 @@
 {
-    "title": "Sugar & Magnolias",
-    "subtitle": "Pick 4 accompaniments",
-    "price": "$10 base",
-    "items": [
-        "Strawberries",
-        "Grapes",
-        "Olives",
-        "Honey"
-    ]
+  "title": "Sugar & Magnolias",
+  "subtitle": "Pick 4 accompaniments",
+  "price": "$10 base",
+  "items": [
+    "Strawberries",
+    "Grapes",
+    "Olives",
+    "Honey"
+  ],
+  "image": "/uploads/bri-with-cart.jpg"
 }
