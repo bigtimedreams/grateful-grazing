@@ -13,7 +13,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-// --- Data Type Definitions (Interfaces for all collections) ---
+// --- Data Type Definitions ---
 interface HomepageData {
   hero_headline: string;
   hero_subheadline: string;
@@ -26,103 +26,90 @@ interface MenuCardData {
   subtitle: string;
   price: string;
   items: string[];
-  image?: string; // ← NEW: optional image from CMS JSON
+  image?: string;
 }
-interface GalleryImage {
-  title?: string;
-  image: string;
-}
-interface TestimonialData {
-  name: string;
-  quote: string;
-  avatar?: string;
-}
-interface FaqItem {
-  question: string;
-  answer: string;
-}
-interface SettingsData {
-  phone: string;
-  email: string;
-  facebook_url: string;
-  service_area: string;
-}
+interface GalleryImage { title?: string; image: string; }
+interface TestimonialData { name: string; quote: string; avatar?: string; }
+interface FaqItem { question: string; answer: string; }
+interface SettingsData { phone: string; email: string; facebook_url: string; service_area: string; }
 
-// --- Data Fetching Function (same behavior as yours) ---
+// --- helpers ---
+const ROOT = process.cwd();
+const readJson = <T,>(rel: string): T => JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+const readFrontmatterDir = <T,>(relDir: string): T[] => {
+  const dir = path.join(ROOT, relDir);
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir)
+    .filter((f) => f.endsWith(".md") || f.endsWith(".markdown"))
+    .map((f) => {
+      const raw = fs.readFileSync(path.join(dir, f), "utf8");
+      const { data } = matter(raw);
+      return data as T;
+    });
+};
+
 function getData() {
-  const readJsonFile = (filePath: string) =>
-    JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const homepageData = readJson<HomepageData>("data/homepage.json");
+  const settingsData = readJson<SettingsData>("data/settings.json");
 
-  const readMdDir = (dirPath: string) => {
-    const fullDir = path.join(process.cwd(), dirPath);
-    const fileNames = fs.readdirSync(fullDir);
-    return fileNames
-      .map((fileName) => {
-        if (path.extname(fileName) === ".md") {
-          const fullPath = path.join(fullDir, fileName);
-          const fileContents = fs.readFileSync(fullPath, "utf8");
-          const { data } = matter(fileContents);
-          return data;
-        }
-      })
-      .filter(Boolean);
-  };
+  const menuDir = path.join(ROOT, "data", "menu");
+  const menuData: MenuCardData[] = fs.existsSync(menuDir)
+    ? fs.readdirSync(menuDir).filter(f => f.endsWith(".json"))
+      .map(f => readJson<MenuCardData>(path.join("data", "menu", f)))
+    : [];
 
-  const homepageData: HomepageData = readJsonFile(
-    path.join(process.cwd(), "data", "homepage.json")
-  );
-  const settingsData: SettingsData = readJsonFile(
-    path.join(process.cwd(), "data", "settings.json")
-  );
+  const galleryData = readFrontmatterDir<GalleryImage>("data/gallery");
+  const testimonialsData = readFrontmatterDir<TestimonialData>("data/testimonials");
+  const faqData = readFrontmatterDir<FaqItem>("data/faq");
 
-  const menuData: MenuCardData[] = fs
-    .readdirSync(path.join(process.cwd(), "data", "menu"))
-    .map((filename) =>
-      readJsonFile(path.join(process.cwd(), "data", "menu", filename))
-    );
-
-  const galleryData = readMdDir("data/gallery") as GalleryImage[];
-  const testimonialsData = readMdDir("data/testimonials") as TestimonialData[];
-  const faqData = readMdDir("data/faq") as FaqItem[];
-
-  return { homepageData, menuData, galleryData, testimonialsData, faqData, settingsData };
+  return { homepageData, settingsData, menuData, galleryData, testimonialsData, faqData };
 }
 
-// --- Main Page Component ---
 export default function Home() {
-  const { homepageData, menuData, galleryData, testimonialsData, faqData, settingsData } = getData();
+  const { homepageData, settingsData, menuData, galleryData, testimonialsData, faqData } = getData();
+
+  // FAQ JSON-LD (AEO)
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqData.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
 
   return (
     <>
       <main className="font-sans text-brown-800 bg-stone-50">
         {/* Hero */}
         <section className="relative overflow-hidden bg-gradient-to-b from-lime-100 to-amber-50 pb-24">
-          <div className="max-w-5xl mx-auto pt-20 text-center px-4">
+          <div className="max-w-screen-2xl mx-auto pt-16 sm:pt-20 text-center px-4 sm:px-6">
             <Image
               src="/Brisheroheader.png"
-              alt="Grateful Grazing Logo"
-              width={400}
-              height={400}
-              className="mx-auto mb-6 drop-shadow-lg"
+              alt="Grateful Grazing logo"
+              width={360}
+              height={360}
+              className="mx-auto mb-4 sm:mb-6 drop-shadow-lg"
               priority
             />
-            <h1 className="text-4xl sm:text-6xl font-bold leading-tight">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight">
               {homepageData.hero_headline}
             </h1>
-            <p className="mt-4 text-lg sm:text-xl text-brown-700 max-w-3xl mx-auto">
+            <p className="mt-3 sm:mt-4 text-base sm:text-lg lg:text-xl text-brown-700 max-w-3xl mx-auto">
               {homepageData.hero_subheadline}
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#menu" className="px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg transition">See the Menu</a>
-              <a href="#quote" className="px-6 py-3 rounded-full bg-lime-600 hover:bg-lime-700 text-white font-semibold shadow-lg transition">Get a Quote</a>
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              <a href="#menu" className="px-5 sm:px-6 py-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg transition">See the Menu</a>
+              <a href="#quote" className="px-5 sm:px-6 py-3 rounded-full bg-lime-600 hover:bg-lime-700 text-white font-semibold shadow-lg transition">Get a Quote</a>
             </div>
           </div>
         </section>
 
         {/* Menu Highlights */}
-        <section id="menu" className="max-w-6xl mx-auto py-16 px-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">Menu Highlights</h2>
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <section id="menu" className="max-w-screen-2xl mx-auto py-12 sm:py-16 px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-8 sm:mb-12">Menu Highlights</h2>
+          <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
             {menuData.map((card) => (
               <MenuCard
                 key={card.title}
@@ -130,7 +117,7 @@ export default function Home() {
                 subtitle={card.subtitle}
                 price={card.price}
                 items={card.items}
-                image={card.image /* stays undefined if not present; component handles it */}
+                image={card.image}
               />
             ))}
           </div>
@@ -157,6 +144,13 @@ export default function Home() {
 
       {/* Footer */}
       <Footer {...settingsData} />
+
+      {/* AEO: FAQ JSON-LD */}
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+      />
     </>
   );
 }
