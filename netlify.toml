@@ -4,10 +4,12 @@
 [build]
   command = "yarn build"
   publish = "out"
-  # (Optional but recommended) lock Node version used on Netlify
-  environment = { NODE_VERSION = "18" }
 
-# Use a small functions folder for things like Airtable/Email.
+[build.environment]
+  # Node 20 is recommended for Next 14; 18 also works.
+  NODE_VERSION = "20"
+
+# Optional: small serverless functions live here (only if you add any).
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
